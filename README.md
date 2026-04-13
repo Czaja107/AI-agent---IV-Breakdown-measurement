@@ -1,6 +1,6 @@
 #IV-Agent: Autonomous cap Breakdown reliability characterization (AI PhD student project)
 
-**An agentic experiment manager for on-chip capacitor I–V / breakdown durability measurements.**
+**An agentic experiment manager for capacitor I–V breakdown durability measurements.**
 
 This is not just a scripted measurement loop! IV-Agent makes PhD-student-like decisions during a run. It adapts its measurement plan based on what it observes, reasons about causes, detects spatial and temporal trends, and sends you an email when something goes wrong. Once it's done measuring, it send you a summary with notes including the observations.
 
