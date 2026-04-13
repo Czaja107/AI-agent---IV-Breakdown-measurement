@@ -1,14 +1,12 @@
-IV-Agent Autonomous cap Breakdown reliability characterization (AI PhD student)
+Autonomous AI agent performing IV cap breakdown reliability characterization (AI PhD student)
 
-An agentic experiment manager for capacitor I–V breakdown durability measurements.
-
-This is not just a scripted measurement loop! The IV agent makes PhD-student-like decisions during a run. It adapts its measurement plan based on what it observes, reasons about causes, detects spatial and temporal trends, and sends you an email when something goes wrong. Once it's done measuring, it send you a summary with notes with the observations.
+This is not just a scripted measurement loop! The IV agent makes PhD-student-like decisions during a run. It adapts its measurement plan based on what it observes, reasons about causes, detects spatial and temporal trends, and sends you an email when something goes wrong. Once it's done measuring, it sends you a summary note with the observations.
 
 ---
 
 ## What it does
 
-IV-Agent orchestrates reliability characterisation of a 2D grid of on-chip capacitor devices (MIM, MOS, or similar dielectrics). The agent:
+IV-Agent orchestrates reliability characterisation of a 2D grid of capacitor devices (MIM, MOS, or similar dielectrics) on a chip. The agent:
 
 1. Steps through every device in the grid
 2. Runs an initial I–V health-check measurement
@@ -189,9 +187,9 @@ graph TD
 
 ---
 
-## Extra: I built a small, simplified simulator of the probe + oscilloscope setup. (If the gax probe station is too booked/does not work and I want to test updates to my agent:)
+## Extra: I built a small, simplified simulator of the probe + oscilloscope setup. (If the probe station is too booked/does not work and I want to test updates to my agent:)
 
- Here's the file simualtes it: `instruments/simulator.py`
+ Here's the file that simulates it: `instruments/simulator.py`
  
  The simulator:
 
