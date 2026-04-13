@@ -1,8 +1,8 @@
-#IV-Agent: Autonomous cap Breakdown reliability characterization (AI PhD student project)
+IV-Agent Autonomous cap Breakdown reliability characterization (AI PhD student)
 
-**An agentic experiment manager for capacitor I–V breakdown durability measurements.**
+An agentic experiment manager for capacitor I–V breakdown durability measurements.
 
-This is not just a scripted measurement loop! IV-Agent makes PhD-student-like decisions during a run. It adapts its measurement plan based on what it observes, reasons about causes, detects spatial and temporal trends, and sends you an email when something goes wrong. Once it's done measuring, it send you a summary with notes including the observations.
+This is not just a scripted measurement loop! The IV agent makes PhD-student-like decisions during a run. It adapts its measurement plan based on what it observes, reasons about causes, detects spatial and temporal trends, and sends you an email when something goes wrong. Once it's done measuring, it send you a summary with notes with the observations.
 
 ---
 
@@ -345,7 +345,7 @@ With `configs/demo.yaml`, the agent will observe the following pattern and reaso
 
 ---
 
-## Connecting real hardware
+## Connecting real measurement setup
 
 The abstract `InstrumentBackend` interface (`instruments/base.py`) defines all operations the agent uses:
 
@@ -360,18 +360,16 @@ class InstrumentBackend(ABC):
     def resume(self) -> None: ...
 ```
 
-To connect real hardware:
+To connect to the actual probe and the oscilloscope with pulse generator setup:
 1. Subclass `InstrumentBackend`
 2. Implement each method using your instrument's VISA / proprietary API
 3. Update `InstrumentBackend.from_config()` to return your class when `simulate: false`
 4. Set `instruments.simulate: false` in config
 
-The agent loop does not change — only the backend implementation does.
-
 **Probe station notes:**
-- The agent assumes the operator has manually landed the probes on the first device
+- The agent assumes that the PhD student has manually landed the probes on the first device
 - `move_to_grid_position(ix, iy)` should use the X/Y spacing from config to compute step distances from the first landing position
-- The Cascade Microtech eVue III supports programmatic stage control via its software API
+- The Cascade Microtech eVue III supports programmatic stage control via its software API (this agent interfaces the Python script on the PC connected to the probe)
 
 **Keysight notes:**
 - Use PyVISA to connect to B1500A, B2900, or similar
@@ -380,7 +378,7 @@ The agent loop does not change — only the backend implementation does.
 
 ---
 
-## Safety checks before running the agent (CHECK BEFORE RUNNING THE AGENT SO YOU DON'T DAMAGE THE PROBE TIPS!)
+## Safety checks before running the agent (CHECK BEFORE RUNNING THE AGENT SO YOU DON'T DAMAGE THE PROBE, ITS TIPS & THE OSCILLOSCOPE!)
 
 - Contact / touchdown must be performed manually before the agent starts
 - Severity-4 alerts pause the run — verify pause/resume logic before using in production
