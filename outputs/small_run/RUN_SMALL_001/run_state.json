@@ -1,0 +1,49 @@
+{
+  "chip_id": "SMALL_CHIP_001",
+  "run_id": "RUN_SMALL_001",
+  "start_time": "2026-04-13T00:20:32.516809",
+  "end_time": "2026-04-13T00:20:32.690122",
+  "n_devices_total": 9,
+  "n_devices_done": 9,
+  "n_healthy": 5,
+  "n_degrading": 0,
+  "n_failed": 2,
+  "n_shorted": 1,
+  "n_contact_issue": 1,
+  "n_skipped": 0,
+  "n_alerts": 0,
+  "n_notes": 31,
+  "max_consecutive_failures": 4,
+  "global_suspicion_score": 0.0,
+  "is_complete": true,
+  "hypotheses": {
+    "true_device_degradation": {
+      "support": 1.0,
+      "active": true
+    },
+    "pre_existing_short": {
+      "support": 0.0,
+      "active": false
+    },
+    "contact_degradation": {
+      "support": 0.0,
+      "active": false
+    },
+    "setup_drift": {
+      "support": 0.0,
+      "active": false
+    },
+    "local_spatial_defect": {
+      "support": 0.45,
+      "active": true
+    },
+    "corner_effect": {
+      "support": 0.6,
+      "active": true
+    },
+    "measurement_noise_issue": {
+      "support": 0.0,
+      "active": false
+    }
+  }
+}

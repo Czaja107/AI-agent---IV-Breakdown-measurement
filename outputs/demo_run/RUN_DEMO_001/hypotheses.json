@@ -1,0 +1,90 @@
+{
+  "true_device_degradation": {
+    "hypothesis": "true_device_degradation",
+    "support_level": 1.0,
+    "active": true,
+    "evidence_for": [
+      "[rapid_degradation] trend=rapidly_worsening",
+      "[rapid_degradation] trend=near_breakdown"
+    ],
+    "evidence_against": [
+      "[initial_classification] Device classified as contact_issue"
+    ],
+    "last_updated": "2026-04-13T00:21:10.612099"
+  },
+  "pre_existing_short": {
+    "hypothesis": "pre_existing_short",
+    "support_level": 0.0,
+    "active": false,
+    "evidence_for": [],
+    "evidence_against": [],
+    "last_updated": "2026-04-13T00:21:09.474944"
+  },
+  "contact_degradation": {
+    "hypothesis": "contact_degradation",
+    "support_level": 0.0,
+    "active": false,
+    "evidence_for": [
+      "[initial_classification] Device classified as contact_issue",
+      "[control_device_check] Control device CAP_02_02 checked at request of CAP_01_01: healthy",
+      "Control device is healthy \u2014 issue is local, not instrument-wide",
+      "[control_device_check] Control device CAP_02_02 checked at request of CAP_03_03: healthy",
+      "Control device is healthy \u2014 issue is local, not instrument-wide"
+    ],
+    "evidence_against": [
+      "[initial_classification] Device classified as healthy",
+      "[rapid_degradation] trend=rapidly_worsening",
+      "[rapid_degradation] trend=near_breakdown"
+    ],
+    "last_updated": "2026-04-13T00:21:10.612104"
+  },
+  "setup_drift": {
+    "hypothesis": "setup_drift",
+    "support_level": 0.0,
+    "active": false,
+    "evidence_for": [],
+    "evidence_against": [
+      "[initial_classification] Device classified as healthy",
+      "[control_device_check] Control device CAP_02_02 checked at request of CAP_01_01: healthy",
+      "[control_device_check] Control device CAP_02_02 checked at request of CAP_03_03: healthy"
+    ],
+    "last_updated": "2026-04-13T00:21:10.602851"
+  },
+  "local_spatial_defect": {
+    "hypothesis": "local_spatial_defect",
+    "support_level": 0.75,
+    "active": true,
+    "evidence_for": [
+      "[control_device_check] Control device CAP_02_02 checked at request of CAP_01_01: healthy",
+      "[spatial_cluster] 4-device cluster in bottom-center region",
+      "[control_device_check] Control device CAP_02_02 checked at request of CAP_03_03: healthy",
+      "[spatial_cluster] 5-device cluster in bottom-center region"
+    ],
+    "evidence_against": [],
+    "last_updated": "2026-04-13T00:21:10.622527"
+  },
+  "corner_effect": {
+    "hypothesis": "corner_effect",
+    "support_level": 0.8999999999999999,
+    "active": true,
+    "evidence_for": [
+      "[spatial_cluster] 4-device cluster in bottom-center region",
+      "4-device cluster in bottom-center region",
+      "[spatial_cluster] 5-device cluster in bottom-center region",
+      "5-device cluster in bottom-center region",
+      "5-device cluster in bottom-center region"
+    ],
+    "evidence_against": [],
+    "last_updated": "2026-04-13T00:21:10.622515"
+  },
+  "measurement_noise_issue": {
+    "hypothesis": "measurement_noise_issue",
+    "support_level": 0.08,
+    "active": false,
+    "evidence_for": [
+      "[initial_classification] Device classified as contact_issue"
+    ],
+    "evidence_against": [],
+    "last_updated": "2026-04-13T00:21:10.237752"
+  }
+}

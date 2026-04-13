@@ -1,0 +1,49 @@
+{
+  "chip_id": "DEMO_CHIP_001",
+  "run_id": "RUN_DEMO_001",
+  "start_time": "2026-04-13T00:21:10.076719",
+  "end_time": "2026-04-13T00:21:10.623364",
+  "n_devices_total": 20,
+  "n_devices_done": 20,
+  "n_healthy": 14,
+  "n_degrading": 0,
+  "n_failed": 5,
+  "n_shorted": 1,
+  "n_contact_issue": 0,
+  "n_skipped": 0,
+  "n_alerts": 0,
+  "n_notes": 63,
+  "max_consecutive_failures": 6,
+  "global_suspicion_score": 0.0,
+  "is_complete": true,
+  "hypotheses": {
+    "true_device_degradation": {
+      "support": 1.0,
+      "active": true
+    },
+    "pre_existing_short": {
+      "support": 0.0,
+      "active": false
+    },
+    "contact_degradation": {
+      "support": 0.0,
+      "active": false
+    },
+    "setup_drift": {
+      "support": 0.0,
+      "active": false
+    },
+    "local_spatial_defect": {
+      "support": 0.75,
+      "active": true
+    },
+    "corner_effect": {
+      "support": 0.9,
+      "active": true
+    },
+    "measurement_noise_issue": {
+      "support": 0.08,
+      "active": false
+    }
+  }
+}

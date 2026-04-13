@@ -1,0 +1,79 @@
+{
+  "true_device_degradation": {
+    "hypothesis": "true_device_degradation",
+    "support_level": 1.0,
+    "active": true,
+    "evidence_for": [
+      "[rapid_degradation] trend=near_breakdown"
+    ],
+    "evidence_against": [],
+    "last_updated": "2026-04-13T00:20:32.685323"
+  },
+  "pre_existing_short": {
+    "hypothesis": "pre_existing_short",
+    "support_level": 0.0,
+    "active": false,
+    "evidence_for": [],
+    "evidence_against": [],
+    "last_updated": "2026-04-13T00:20:31.904490"
+  },
+  "contact_degradation": {
+    "hypothesis": "contact_degradation",
+    "support_level": 0.0,
+    "active": false,
+    "evidence_for": [
+      "[consecutive_contact_failures] 1 consecutive contact failures",
+      "[control_device_check] Control device CAP_01_01 checked at request of CAP_02_02: healthy",
+      "Control device is healthy \u2014 issue is local, not instrument-wide"
+    ],
+    "evidence_against": [
+      "[initial_classification] Device classified as healthy",
+      "[rapid_degradation] trend=near_breakdown"
+    ],
+    "last_updated": "2026-04-13T00:20:32.685329"
+  },
+  "setup_drift": {
+    "hypothesis": "setup_drift",
+    "support_level": 0.0,
+    "active": false,
+    "evidence_for": [],
+    "evidence_against": [
+      "[initial_classification] Device classified as healthy",
+      "[control_device_check] Control device CAP_01_01 checked at request of CAP_02_02: healthy"
+    ],
+    "last_updated": "2026-04-13T00:20:32.672534"
+  },
+  "local_spatial_defect": {
+    "hypothesis": "local_spatial_defect",
+    "support_level": 0.44999999999999996,
+    "active": true,
+    "evidence_for": [
+      "[spatial_cluster] 2-device cluster in bottom-left region",
+      "[control_device_check] Control device CAP_01_01 checked at request of CAP_02_02: healthy",
+      "[spatial_cluster] 3-device cluster in bottom-center region"
+    ],
+    "evidence_against": [],
+    "last_updated": "2026-04-13T00:20:32.689247"
+  },
+  "corner_effect": {
+    "hypothesis": "corner_effect",
+    "support_level": 0.6,
+    "active": true,
+    "evidence_for": [
+      "[spatial_cluster] 2-device cluster in bottom-left region",
+      "2-device cluster in bottom-left region",
+      "[spatial_cluster] 3-device cluster in bottom-center region",
+      "3-device cluster in bottom-center region"
+    ],
+    "evidence_against": [],
+    "last_updated": "2026-04-13T00:20:32.689235"
+  },
+  "measurement_noise_issue": {
+    "hypothesis": "measurement_noise_issue",
+    "support_level": 0.0,
+    "active": false,
+    "evidence_for": [],
+    "evidence_against": [],
+    "last_updated": "2026-04-13T00:20:31.904507"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "checkpoint_time": "2026-04-13T00:20:32.687541",
+  "n_devices_done": 9,
+  "n_devices_total": 9,
+  "n_healthy": 5,
+  "n_failed": 2,
+  "n_shorted": 1,
+  "n_contact_issue": 1,
+  "consecutive_failures": 4,
+  "global_suspicion_score": 0.0,
+  "n_alerts": 0,
+  "n_notes": 30,
+  "hypotheses": {
+    "true_device_degradation": 1.0,
+    "local_spatial_defect": 0.3,
+    "corner_effect": 0.3
+  }
+}

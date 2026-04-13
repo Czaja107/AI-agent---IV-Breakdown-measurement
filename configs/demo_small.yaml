@@ -1,0 +1,108 @@
+# ============================================================
+# IV-Agent small demo config — 3×3 grid, fast simulation
+#
+# Use this for quick testing / CI:
+#   python -m iv_agent simulate --config configs/demo_small.yaml
+# ============================================================
+
+run:
+  chip_id: "SMALL_CHIP_001"
+  run_id: "RUN_SMALL_001"
+  output_dir: "outputs/small_run"
+  description: "3x3 quick-test run"
+  operator: "ci"
+
+grid:
+  nx: 3
+  ny: 3
+  x_spacing_um: 100.0
+  y_spacing_um: 100.0
+  starting_device: [0, 0]
+  row_major: true
+
+device_naming:
+  prefix: "CAP"
+  scheme: "row_col"
+
+control_devices:
+  - [1, 1]   # centre device as control
+
+instruments:
+  simulate: true
+  simulation:
+    seed: 7
+    noise_burst_probability: 0.0
+    device_type_overrides:
+      CAP_00_00: healthy_stable
+      CAP_00_01: slowly_degrading
+      CAP_00_02: healthy_stable
+      CAP_01_00: intermittent_contact
+      CAP_01_01: control_device
+      CAP_01_02: healthy_stable
+      CAP_02_00: pre_shorted
+      CAP_02_01: corner_weak
+      CAP_02_02: abrupt_breakdown
+
+measurement_protocols:
+  health_check:
+    v_start: 0.0
+    v_stop: 5.0
+    v_step: 0.5
+    compliance_current_A: 1.0e-4
+
+  stress_batch:
+    v_start: 0.0
+    v_stop: 12.0
+    v_step: 1.0
+    compliance_current_A: 1.0e-4
+    n_cycles: 3
+
+  dense_monitoring:
+    v_start: 0.0
+    v_stop: 8.0
+    v_step: 0.5
+    compliance_current_A: 1.0e-4
+    n_cycles: 2
+
+  confirmatory:
+    v_start: 0.0
+    v_stop: 5.0
+    v_step: 0.5
+    compliance_current_A: 1.0e-4
+    n_repeats: 2
+
+  low_stress_recheck:
+    v_start: 0.0
+    v_stop: 3.0
+    v_step: 0.5
+    compliance_current_A: 1.0e-4
+
+  control_check:
+    v_start: 0.0
+    v_stop: 5.0
+    v_step: 0.5
+    compliance_current_A: 1.0e-4
+
+thresholds:
+  max_leakage_healthy_A: 5.0e-10
+  max_leakage_degraded_A: 1.0e-7
+  min_resistance_healthy_ohm: 1.0e10
+  short_resistance_threshold_ohm: 1.0e4
+  min_current_at_max_v_A: 1.0e-13
+  consecutive_failures_suspicion: 2
+  consecutive_failures_escalation: 4
+  confirmatory_inconsistency_count: 2
+  neighbor_leakage_ratio_suspicious: 8.0
+  neighbor_leakage_ratio_critical: 30.0
+  trend_worsening_rate_suspicious: 0.20
+  trend_worsening_rate_critical: 0.40
+  suspicion_score_for_control_check: 0.50
+  suspicion_score_for_escalation: 0.75
+  spatial_cluster_min_size: 2
+  spatial_cluster_radius: 2
+  max_stress_batches_per_device: 5
+  stress_batches_dense_mode: 3
+  control_device_leakage_increase_threshold: 5.0
+
+email:
+  enabled: false

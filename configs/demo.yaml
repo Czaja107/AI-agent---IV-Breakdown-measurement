@@ -1,0 +1,160 @@
+# ============================================================
+# IV-Agent demo configuration — 5×4 grid, simulation mode
+#
+# This config creates a 20-device scenario designed to trigger
+# all of the agent's agentic decision pathways:
+#
+#   - Normal stress testing on healthy devices
+#   - Contact issues triggering retries and control checks
+#   - Abrupt breakdown triggering dense monitoring
+#   - Corner weakness detected as a spatial cluster
+#   - Pre-shorted device detected and skipped immediately
+#   - Spatial cluster of weak corner devices escalated
+#
+# Run with:
+#   python -m iv_agent simulate --config configs/demo.yaml
+# ============================================================
+
+run:
+  chip_id: "DEMO_CHIP_001"
+  run_id: "RUN_DEMO_001"
+  output_dir: "outputs/demo_run"
+  description: "5x4 demonstration run showcasing all agentic decision pathways"
+  operator: "demo"
+
+grid:
+  nx: 5              # columns (X direction)
+  ny: 4              # rows    (Y direction)
+  x_spacing_um: 100.0
+  y_spacing_um: 100.0
+  starting_device: [0, 0]
+  row_major: true
+
+device_naming:
+  prefix: "CAP"
+  scheme: "row_col"   # CAP_iy_ix format
+
+# Known healthy control / sentinel device (measured out-of-sequence when suspicious)
+control_devices:
+  - [2, 2]   # centre device — CAP_02_02
+
+instruments:
+  simulate: true
+  simulation:
+    seed: 42
+    probe_degradation_after_n_devices: 999   # no probe degradation in demo
+    noise_burst_probability: 0.03
+
+    # Explicit device type overrides for a deterministic, interesting demo scenario
+    #
+    # Grid layout (ix=col, iy=row):
+    #   Col:   0              1              2              3              4
+    #   Row 0: healthy_stable healthy_stable healthy_stable slowly_degrg  healthy_stable
+    #   Row 1: intermittent   intermittent   healthy_stable healthy_stable healthy_stable
+    #   Row 2: healthy_stable healthy_stable CONTROL        abrupt_brkdwn healthy_stable
+    #   Row 3: corner_weak    corner_weak    corner_weak    corner_weak    pre_shorted
+    #
+    device_type_overrides:
+      CAP_00_00: healthy_stable
+      CAP_00_01: healthy_stable
+      CAP_00_02: healthy_stable
+      CAP_00_03: slowly_degrading
+      CAP_00_04: healthy_stable
+      CAP_01_00: intermittent_contact
+      CAP_01_01: intermittent_contact
+      CAP_01_02: healthy_stable
+      CAP_01_03: healthy_stable
+      CAP_01_04: healthy_stable
+      CAP_02_00: healthy_stable
+      CAP_02_01: healthy_stable
+      CAP_02_02: control_device
+      CAP_02_03: abrupt_breakdown
+      CAP_02_04: healthy_stable
+      CAP_03_00: corner_weak
+      CAP_03_01: corner_weak
+      CAP_03_02: corner_weak
+      CAP_03_03: corner_weak
+      CAP_03_04: pre_shorted
+
+measurement_protocols:
+  health_check:
+    v_start: 0.0
+    v_stop: 5.0
+    v_step: 0.25
+    compliance_current_A: 1.0e-4
+
+  stress_batch:
+    v_start: 0.0
+    v_stop: 12.0
+    v_step: 0.5
+    compliance_current_A: 1.0e-4
+    n_cycles: 5              # 5 sweeps per batch
+
+  dense_monitoring:
+    v_start: 0.0
+    v_stop: 8.0
+    v_step: 0.25
+    compliance_current_A: 1.0e-4
+    n_cycles: 3
+
+  confirmatory:
+    v_start: 0.0
+    v_stop: 5.0
+    v_step: 0.25
+    compliance_current_A: 1.0e-4
+    n_repeats: 3
+
+  low_stress_recheck:
+    v_start: 0.0
+    v_stop: 3.0
+    v_step: 0.25
+    compliance_current_A: 1.0e-4
+
+  control_check:
+    v_start: 0.0
+    v_stop: 5.0
+    v_step: 0.25
+    compliance_current_A: 1.0e-4
+
+thresholds:
+  # Health classification
+  max_leakage_healthy_A: 5.0e-10      # < 500 pA at 1V → healthy
+  max_leakage_degraded_A: 1.0e-7      # 500 pA – 100 nA → degrading
+  min_resistance_healthy_ohm: 1.0e10
+  short_resistance_threshold_ohm: 1.0e4
+  min_current_at_max_v_A: 1.0e-13
+
+  # Suspicion triggers
+  consecutive_failures_suspicion: 2
+  consecutive_failures_escalation: 5
+  confirmatory_inconsistency_count: 2
+  neighbor_leakage_ratio_suspicious: 8.0
+  neighbor_leakage_ratio_critical: 30.0
+  trend_worsening_rate_suspicious: 0.20
+  trend_worsening_rate_critical: 0.40
+  suspicion_score_for_control_check: 0.50
+  suspicion_score_for_escalation: 0.75
+
+  # Spatial analysis
+  spatial_cluster_min_size: 3
+  spatial_cluster_radius: 2
+
+  # Stress testing
+  max_stress_batches_per_device: 8
+  stress_batches_dense_mode: 4
+
+  # Control / sentinel
+  control_device_leakage_increase_threshold: 5.0
+
+email:
+  enabled: false
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  use_tls: true
+  sender: "probe_agent@gmail.com"
+  password: "probe_agent_password"
+  recipients: [
+    - "mateuszczajka107@gmail.com"
+  ]
+  send_on_severity_3_plus: true
+  pause_on_severity_4: true
