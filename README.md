@@ -11,21 +11,21 @@ IV-Agent orchestrates reliability characterisation of a 2D grid of capacitor dev
 1. Steps through every device in the grid
 2. Runs an initial I–V health-check measurement
 3. *Decides* whether the device is healthy, shorted, degrading, or has a contact issue
-4. If healthy — begins repeated stress / durability sweeps
-5. After each batch — analyses the temporal trend and decides whether to continue, switch protocol, or stop
+4. If healthy, begins repeated stress / durability sweeps
+5. After each batch analyses the temporal trend and decides whether to continue, switch protocol, or stop
 6. Continuously compares each device to its neighbours and flags spatial anomalies
 7. Maintains a *suspicion score* that triggers extra actions (retries, control checks, escalations)
 8. Tracks structured *hypotheses* about what is happening and updates them with evidence.
 9. Writes self-generated *experiment notes* in plain language
-10. Sends *severity-graded alerts* and optionally pauses the run when human intervention is needed
+10. Sends *severity-graded alerts* and optionally pauses the run when PhD student intervention is needed
 
 Agentic/AI capabilities are *highlighted* (Reflecting my behavior in the lab as a PhD student)
 ---
 
 ## Key agentic features
 
-### 1. Suspicion engine (reflecting PhD student debugging skills)
-The agent maintains a continuous suspicion score (0–1) for each device and for the experiment overall. Suspicion is raised by:
+### 1. Suspicion engine (reflecting PhD student's thinking when debugging)
+The agent maintains a continuous suspicion score for each device and for the experiment overall. Suspicion is raised by:
 - Consecutive device failures after a healthy streak
 - Repeated inconsistency between confirmatory (control) measurements
 - A device's leakage being much higher than its neighbours
@@ -93,7 +93,7 @@ One or more grid positions can be designated as known-healthy **control devices*
 - **Control healthy** -> the observed issues are real device/process behaviour. `CONTACT_DEGRADATION` or `LOCAL_SPATIAL_DEFECT` hypothesis supported.
 - **Control degraded** -> instrument drift or probe-tip problem suspected. `SETUP_DRIFT` hypothesis supported. Immediate escalation.
 
-### 7. Self-generated experiment notes
+### 7. Self-generated experiment logs & Notes
 The agent continuously writes concise, factual notes. Here are some examples from previous runs:
 
 ```
@@ -115,6 +115,32 @@ The agent continuously writes concise, factual notes. Here are some examples fro
   in bottom-left region: [CAP_03_00, CAP_03_01, CAP_03_02, CAP_03_03].
   CORNER_EFFECT hypothesis supported.
 ```
+Then, the agent summarizes the findings in a short note. Example:
+"Run Summary - IV Breakdown
+Run ID: RUN_001
+Chip ID: CHIP_001
+Grid: 25 × 25 (CAP_00_00 → CAP_25_25)
+
+Completed full automated I–V reliability characterization across all 625 devices.
+
+Key observations:
+1. Healthy baseline region:
+Devices CAP_00_00 → CAP_02_00 and CAP_00_01 exhibited stable leakage (~1e-11–1e-10 A at Vmax) with no significant degradation over 5 stress cycles.
+2. Slow degradation:
+CAP_03_00 showed gradual leakage increase (×6 over 5 batches) with breakdown voltage shifting from ~9.8 V → ~8.9 V. Classified as SLOWLY_WORSENING.
+3. Contact-related failures:
+CAP_00_01, CAP_01_01: near-zero current traces on initial sweeps
+Confirmatory measurements failed twice → marked as CONTACT_ISSUE
+Suspicion triggered control check at CAP_02_02 → control remained stable
+→ supports CONTACT_DEGRADATION (local)
+4. Abrupt breakdown event:
+CAP_02_03:
+Passed health check
+Hit compliance at 6.8 V during batch 3
+Leakage increased >100× within 2 cycles
+→ switched to DENSE_MONITORING, classified as FAILED (abrupt_breakdown)
+"
+
 
 Notes are saved as `notes.md` (human-readable) and `notes.jsonl` (machine-readable).
 
