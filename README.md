@@ -10,16 +10,16 @@ IV-Agent orchestrates reliability characterisation of a 2D grid of capacitor dev
 
 1. Steps through every device in the grid
 2. Runs an initial I–V health-check measurement
-3. *Decides* whether the device is healthy, shorted, degrading, or has a contact issue
+3. **Decides** whether the device is healthy, shorted, degrading, or has a contact issue
 4. If healthy, begins repeated stress / durability sweeps
 5. After each batch analyses the temporal trend and decides whether to continue, switch protocol, or stop
 6. Continuously compares each device to its neighbours and flags spatial anomalies
-7. Maintains a *suspicion score* that triggers extra actions (retries, control checks, escalations)
-8. Tracks structured *hypotheses* about what is happening and updates them with evidence.
-9. Writes self-generated *experiment notes* in plain language
-10. Sends *severity-graded alerts* and optionally pauses the run when PhD student intervention is needed
+7. Maintains a **suspicion score** that triggers extra actions (retries, control checks, escalations)
+8. Tracks structured **hypotheses** about what is happening and updates them with evidence.
+9. Writes self-generated **experiment notes** in plain language
+10. Sends **severity-graded alerts** and optionally pauses the run when PhD student intervention is needed
 
-Agentic/AI capabilities are *highlighted* (Reflecting my behavior in the lab as a PhD student)
+Agentic/AI capabilities are **highlighted** (Reflecting my behavior in the lab as a PhD student)
 
 
 ## Key agentic features
