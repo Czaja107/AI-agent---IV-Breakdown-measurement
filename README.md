@@ -20,7 +20,7 @@ IV-Agent orchestrates reliability characterisation of a 2D grid of capacitor dev
 10. Sends *severity-graded alerts* and optionally pauses the run when PhD student intervention is needed
 
 Agentic/AI capabilities are *highlighted* (Reflecting my behavior in the lab as a PhD student)
----
+
 
 ## Key agentic features
 
