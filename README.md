@@ -33,7 +33,7 @@ The agent maintains a continuous suspicion score for each device and for the exp
 - Noisy or near-zero measurement traces
 - A known healthy control device showing unexpected behaviour
 
-Suspicion is not just logged — it triggers extra actions such as confirmatory repeats, control device checks, and escalation.
+Suspicion is not just logged - it triggers extra actions such as confirmatory repeats, control device checks, and escalation.
 
 ### 2. Hypothesis tracking (Checking for specific reasons of failure I usually observe in measurements)
 The agent maintains structured, explainable beliefs about what may be causing observed behaviour:
@@ -68,7 +68,7 @@ For each device, the agent tracks how leakage and breakdown voltage evolve acros
 | `rapidly_worsening` | Leakage growing faster than the suspicious threshold |
 | `near_breakdown` | Compliance current hit frequently |
 | `abrupt_failure` | Sudden large leakage jump |
-| `recovering` | Leakage decreasing (unusual — worth noting) |
+| `recovering` | Leakage decreasing (unusual - worth noting) |
 | `ambiguous` | Inconsistent direction |
 
 Trend state directly influences the next action selected by the policy engine.
