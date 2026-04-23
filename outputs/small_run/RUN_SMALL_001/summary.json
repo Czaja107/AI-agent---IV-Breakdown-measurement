@@ -1,8 +1,8 @@
 {
   "chip_id": "SMALL_CHIP_001",
   "run_id": "RUN_SMALL_001",
-  "start_time": "2026-04-13T00:20:32.516809",
-  "end_time": "2026-04-13T00:20:32.690122",
+  "start_time": "2026-04-16T23:47:58.978654",
+  "end_time": "2026-04-16T23:47:59.166719",
   "n_devices_total": 9,
   "n_devices_done": 9,
   "n_healthy": 5,
@@ -12,7 +12,7 @@
   "n_contact_issue": 1,
   "n_skipped": 0,
   "n_alerts": 0,
-  "n_notes": 31,
+  "n_notes": 46,
   "max_consecutive_failures": 4,
   "global_suspicion_score": 0.0,
   "is_complete": true,
@@ -26,7 +26,7 @@
       "active": false
     },
     "contact_degradation": {
-      "support": 0.0,
+      "support": 0.22,
       "active": false
     },
     "setup_drift": {
@@ -34,18 +34,34 @@
       "active": false
     },
     "local_spatial_defect": {
-      "support": 0.45,
+      "support": 0.53,
       "active": true
     },
     "corner_effect": {
-      "support": 0.6,
+      "support": 0.92,
       "active": true
     },
     "measurement_noise_issue": {
       "support": 0.0,
       "active": false
+    },
+    "process_split_weakness": {
+      "support": 0.2,
+      "active": false
+    },
+    "structure_dependent_field_stress": {
+      "support": 0.0,
+      "active": false
+    },
+    "fabrication_induced_dielectric_weakness": {
+      "support": 0.28,
+      "active": false
+    },
+    "edge_geometry_sensitivity": {
+      "support": 0.0,
+      "active": false
     }
   },
   "alerts": [],
-  "notes_count": 31
+  "notes_count": 46
 }

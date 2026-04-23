@@ -14,14 +14,6 @@
     "evidence_against": [],
     "last_updated": "2026-04-16T23:47:59.162082"
   },
-  "pre_existing_short": {
-    "hypothesis": "pre_existing_short",
-    "support_level": 0.0,
-    "active": false,
-    "evidence_for": [],
-    "evidence_against": [],
-    "last_updated": "2026-04-16T23:47:58.329308"
-  },
   "contact_degradation": {
     "hypothesis": "contact_degradation",
     "support_level": 0.21999999999999997,
@@ -41,17 +33,6 @@
       "[rapid_degradation] trend=near_breakdown"
     ],
     "last_updated": "2026-04-16T23:47:59.162839"
-  },
-  "setup_drift": {
-    "hypothesis": "setup_drift",
-    "support_level": 0.0,
-    "active": false,
-    "evidence_for": [],
-    "evidence_against": [
-      "[initial_classification] Device classified as healthy",
-      "[control_device_check] Control device CAP_01_01 checked at request of CAP_02_02: healthy"
-    ],
-    "last_updated": "2026-04-16T23:47:59.149705"
   },
   "local_spatial_defect": {
     "hypothesis": "local_spatial_defect",
@@ -85,14 +66,6 @@
     "evidence_against": [],
     "last_updated": "2026-04-16T23:47:59.166195"
   },
-  "measurement_noise_issue": {
-    "hypothesis": "measurement_noise_issue",
-    "support_level": 0.0,
-    "active": false,
-    "evidence_for": [],
-    "evidence_against": [],
-    "last_updated": "2026-04-16T23:47:58.329333"
-  },
   "process_split_weakness": {
     "hypothesis": "process_split_weakness",
     "support_level": 0.2,
@@ -104,14 +77,6 @@
     ],
     "evidence_against": [],
     "last_updated": "2026-04-16T23:47:59.137026"
-  },
-  "structure_dependent_field_stress": {
-    "hypothesis": "structure_dependent_field_stress",
-    "support_level": 0.0,
-    "active": false,
-    "evidence_for": [],
-    "evidence_against": [],
-    "last_updated": "2026-04-16T23:47:58.329339"
   },
   "fabrication_induced_dielectric_weakness": {
     "hypothesis": "fabrication_induced_dielectric_weakness",
@@ -125,13 +90,5 @@
     ],
     "evidence_against": [],
     "last_updated": "2026-04-16T23:47:59.137016"
-  },
-  "edge_geometry_sensitivity": {
-    "hypothesis": "edge_geometry_sensitivity",
-    "support_level": 0.0,
-    "active": false,
-    "evidence_for": [],
-    "evidence_against": [],
-    "last_updated": "2026-04-16T23:47:58.329344"
   }
 }

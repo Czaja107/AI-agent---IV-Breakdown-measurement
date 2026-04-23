@@ -1,4 +1,10 @@
 """Configuration schema for the IV-agent experiment manager."""
-from .schema import AgentConfig, GridConfig, ThresholdConfig, ProtocolParams
+from .schema import (
+    AgentConfig, GridConfig, ThresholdConfig, ProtocolParams,
+    LLMConfig, DeviceStructureMetadataConfig, FabricationContextConfig, VariantMetadata,
+)
 
-__all__ = ["AgentConfig", "GridConfig", "ThresholdConfig", "ProtocolParams"]
+__all__ = [
+    "AgentConfig", "GridConfig", "ThresholdConfig", "ProtocolParams",
+    "LLMConfig", "DeviceStructureMetadataConfig", "FabricationContextConfig", "VariantMetadata",
+]

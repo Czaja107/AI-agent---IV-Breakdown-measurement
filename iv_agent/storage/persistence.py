@@ -122,6 +122,38 @@ class StorageManager:
         self._write_json(output_dir / "checkpoint.json", data)
 
     # -----------------------------------------------------------------------
+    # LLM reasoning records
+    # -----------------------------------------------------------------------
+
+    def append_llm_record(self, record: object, output_dir: Path) -> None:
+        """
+        Append one LLMReasoningRecord to llm_reasoning.jsonl.
+
+        Accepts any object that has a to_dict() method (LLMReasoningRecord).
+        Safe to call multiple times; the file is created on first call.
+        """
+        jsonl_path = output_dir / "llm_reasoning.jsonl"
+        try:
+            data = record.to_dict() if hasattr(record, "to_dict") else dict(record)
+            with open(jsonl_path, "a", encoding="utf-8") as fh:
+                fh.write(json.dumps(data, default=str) + "\n")
+        except Exception as exc:
+            import logging
+            logging.getLogger(__name__).warning(
+                "Failed to append LLM record to %s: %s", jsonl_path, exc
+            )
+
+    def save_llm_summary(self, run_state: "RunState", output_dir: Path) -> None:
+        """Write llm_hypothesis_updates.json with all LLM-touched hypotheses."""
+        llm_hyps = {
+            k: v.to_dict()
+            for k, v in run_state.hypotheses.items()
+            if any("[llm]" in e for e in v.evidence_for)
+        }
+        if llm_hyps:
+            self._write_json(output_dir / "llm_hypothesis_updates.json", llm_hyps)
+
+    # -----------------------------------------------------------------------
     # Utilities
     # -----------------------------------------------------------------------
 

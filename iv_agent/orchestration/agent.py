@@ -43,6 +43,16 @@ from ..analysis.hypotheses import HypothesisTracker, HypothesisEvent
 from ..policy.engine import PolicyEngine
 from ..policy.states import AgentAction, AgentState, PolicyContext, PolicyDecision
 
+# LLM layer (optional imports; only resolved when llm.enabled = true)
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..llm.schemas import LLMReasoningResult
+    from ..llm.scientific_reasoner import ScientificReasoner
+    from ..llm.context_builder import ContextBuilder
+    from ..llm.note_writer import LLMNoteWriter
+    from ..llm.alert_writer import LLMAlertWriter
+    from ..llm.policy_advisor import PolicyAdvisor
+
 
 console = Console(force_terminal=True)
 
@@ -91,6 +101,208 @@ class ExperimentAgent:
         # Output directory
         self.output_dir: Path = config.output_path()
 
+        # -----------------------------------------------------------------------
+        # LLM reasoning layer (optional — only initialised when llm.enabled)
+        # -----------------------------------------------------------------------
+        self.llm_reasoner: Optional["ScientificReasoner"] = None
+        self.llm_context_builder: Optional["ContextBuilder"] = None
+        self.llm_note_writer: Optional["LLMNoteWriter"] = None
+        self.llm_alert_writer: Optional["LLMAlertWriter"] = None
+        self.llm_policy_advisor: Optional["PolicyAdvisor"] = None
+
+        if config.llm.enabled:
+            self._init_llm_layer(config)
+
+    # -----------------------------------------------------------------------
+    # LLM layer initialisation
+    # -----------------------------------------------------------------------
+
+    def _init_llm_layer(self, config: AgentConfig) -> None:
+        """Initialise all LLM sub-modules from config."""
+        from ..llm.client import build_client
+        from ..llm.scientific_reasoner import ScientificReasoner
+        from ..llm.context_builder import ContextBuilder
+        from ..llm.note_writer import LLMNoteWriter
+        from ..llm.alert_writer import LLMAlertWriter
+        from ..llm.policy_advisor import PolicyAdvisor
+
+        llm_cfg = config.llm
+        llm_client = build_client(
+            mode=llm_cfg.mode,
+            api_key=llm_cfg.api_key,
+            model_name=llm_cfg.model_name,
+            base_url=llm_cfg.base_url,
+            temperature=llm_cfg.temperature,
+            max_tokens=llm_cfg.max_tokens,
+            timeout_s=llm_cfg.timeout_s,
+        )
+        self.llm_reasoner = ScientificReasoner(llm_client)
+        self.llm_context_builder = ContextBuilder(config)
+        self.llm_note_writer = LLMNoteWriter()
+        self.llm_alert_writer = LLMAlertWriter()
+        self.llm_policy_advisor = PolicyAdvisor(llm_cfg.advisory_mode)
+
+        console.print(
+            f"  [cyan][LLM] Advisory layer enabled: mode={llm_cfg.mode}, "
+            f"model={llm_cfg.model_name}, "
+            f"advisory_mode={llm_cfg.advisory_mode}[/cyan]"
+        )
+
+    # -----------------------------------------------------------------------
+    # LLM reasoning helper — called at key decision points
+    # -----------------------------------------------------------------------
+
+    def _maybe_run_llm_reasoning(
+        self,
+        device: DeviceRecord,
+        event_type: str,
+        heuristic_decision: PolicyDecision,
+        heuristic_allowed_actions: list[str],
+        metrics: Optional[IVMetrics] = None,
+        trend_features: Optional[TrendFeatures] = None,
+        neighbor_comparison: Optional[NeighborComparison] = None,
+    ) -> "Optional[LLMReasoningResult]":
+        """
+        Run one LLM reasoning step and return the structured result.
+
+        Side-effects (all safe to skip on failure):
+        - Updates hypothesis tracker with LLM evidence
+        - Appends to device.llm_reasoning_events
+        - Appends to llm_reasoning.jsonl via storage manager
+        - Logs LLM advice to console
+
+        Returns None if LLM is disabled, the call fails, or parsing fails.
+        """
+        if self.llm_reasoner is None or self.llm_context_builder is None:
+            return None
+
+        try:
+            context = self.llm_context_builder.build(
+                device=device,
+                run_state=self.run_state,
+                event_type=event_type,
+                allowed_actions=heuristic_allowed_actions,
+                metrics=metrics,
+                trend_features=trend_features,
+                neighbor_comparison=neighbor_comparison,
+            )
+
+            result = self.llm_reasoner.reason(context)
+            if result is None:
+                return None
+
+            # --- Update hypothesis tracker ---
+            self.hypothesis_tracker.update_from_llm_result(result, device)
+
+            # --- Store compact event summary on device record ---
+            device.llm_reasoning_events.append({
+                "event_type": event_type,
+                "hypotheses": result.primary_hypotheses,
+                "recommended_action": result.recommended_action,
+                "uncertainty_notes": result.uncertainty_notes[:1],
+                "parsing_succeeded": result.parsing_succeeded,
+            })
+
+            # --- Persist full record to llm_reasoning.jsonl ---
+            from ..llm.schemas import LLMReasoningRecord
+            record = LLMReasoningRecord(
+                timestamp=datetime.now().isoformat(),
+                device_id=device.device_id,
+                event_type=event_type,
+                context_snapshot=context.to_prompt_dict(),
+                llm_result=result.model_dump(exclude={"raw_response", "parsing_succeeded"}),
+                heuristic_action=heuristic_decision.action.value,
+                llm_recommendation=result.recommended_action,
+                llm_recommendation_matched=(
+                    result.recommended_action == heuristic_decision.action.value
+                ),
+            )
+            self.run_state.llm_reasoning_records.append({
+                "device_id": device.device_id,
+                "event_type": event_type,
+                "llm_action": result.recommended_action,
+                "heuristic_action": heuristic_decision.action.value,
+                "matched": record.llm_recommendation_matched,
+            })
+            self.storage.append_llm_record(record, self.output_dir)
+
+            # --- Console summary ---
+            if result.primary_hypotheses or result.recommended_action:
+                hyp_str = ", ".join(result.primary_hypotheses[:2]) or "n/a"
+                match_tag = (
+                    "(matches heuristic)"
+                    if record.llm_recommendation_matched
+                    else "(differs from heuristic)"
+                )
+                console.print(
+                    f"  [dim][LLM] hyp={hyp_str} | "
+                    f"rec={result.recommended_action or 'n/a'} {match_tag}[/dim]"
+                )
+
+            return result
+
+        except Exception as exc:
+            import logging
+            logging.getLogger(__name__).warning(
+                "LLM reasoning step failed for %s [%s]: %s",
+                device.device_id, event_type, exc,
+            )
+            return None
+
+    def _apply_llm_policy_advice(
+        self,
+        heuristic_decision: PolicyDecision,
+        llm_result: "Optional[LLMReasoningResult]",
+        allowed_actions: list[str],
+        device: DeviceRecord,
+    ) -> PolicyDecision:
+        """
+        Optionally override the heuristic decision with the LLM recommendation.
+
+        Only modifies the decision when:
+        1. llm.enable_llm_policy_advice is True
+        2. advisory_mode is "advisory_with_bounded_override"
+        3. The LLM action passes the PolicyAdvisor safety guard
+        """
+        if (
+            llm_result is None
+            or self.llm_policy_advisor is None
+            or not self.config.llm.enable_llm_policy_advice
+        ):
+            return heuristic_decision
+
+        final_action_str, reason_str, was_applied = self.llm_policy_advisor.apply_advice(
+            heuristic_action=heuristic_decision.action.value,
+            llm_result=llm_result,
+            allowed_actions=allowed_actions,
+            context=None,
+        )
+
+        if not was_applied:
+            return heuristic_decision
+
+        try:
+            final_action = AgentAction(final_action_str)
+        except ValueError:
+            return heuristic_decision
+
+        # Mark the last LLM record as applied
+        if self.run_state.llm_reasoning_records:
+            self.run_state.llm_reasoning_records[-1]["llm_action_applied"] = True
+
+        console.print(
+            f"  [bold cyan][LLM OVERRIDE] {heuristic_decision.action.value} -> "
+            f"{final_action_str}: {reason_str[:80]}[/bold cyan]"
+        )
+
+        return PolicyDecision(
+            action=final_action,
+            reason=f"[LLM] {reason_str}",
+            note=llm_result.note_text if self.config.llm.enable_llm_notes else "",
+            severity_hint=heuristic_decision.severity_hint,
+            new_protocol=heuristic_decision.new_protocol,
+        )
+
     # -----------------------------------------------------------------------
     # Public API
     # -----------------------------------------------------------------------
@@ -138,12 +350,18 @@ class ExperimentAgent:
             grid_pos = self.neighbor_analyzer.classify_grid_position(ix, iy)
             is_control = self.config.is_control_device(ix, iy)
 
+            # Resolve variant metadata for this device (if LLM layer active)
+            variant_id = ""
+            if self.llm_context_builder is not None:
+                variant_id, _, _ = self.llm_context_builder.get_variant_info(dev_id)
+
             device = DeviceRecord(
                 device_id=dev_id,
                 ix=ix,
                 iy=iy,
                 grid_position=grid_pos,
                 is_control_device=is_control,
+                variant_id=variant_id,
             )
             self.run_state.devices[dev_id] = device
             self.run_state.device_order.append(dev_id)
@@ -228,8 +446,28 @@ class ExperimentAgent:
         decision = self.policy_engine.decide(ctx)
         self._log_decision(device, decision)
 
-        if decision.note:
-            self._write_note(device, decision.note, category="device")
+        # --- LLM reasoning after initial health check ---
+        _health_allowed = [a.value for a in AgentAction]  # all legal at this point
+        llm_health_result = self._maybe_run_llm_reasoning(
+            device=device,
+            event_type="health_check",
+            heuristic_decision=decision,
+            heuristic_allowed_actions=_health_allowed,
+            metrics=health_metrics,
+            trend_features=ctx.trend_features,
+            neighbor_comparison=ctx.neighbor_comparison,
+        )
+        # Optionally use LLM-enhanced note text
+        note_text = decision.note
+        if (
+            llm_health_result is not None
+            and self.config.llm.enable_llm_notes
+            and self.llm_note_writer is not None
+        ):
+            note_text = self.llm_note_writer.write_from_llm_text(note_text, llm_health_result)
+
+        if note_text:
+            self._write_note(device, note_text, category="device")
 
         # --- STEP 2: Execute health-check decision ---
         if decision.action == AgentAction.SKIP_DEVICE:
@@ -406,8 +644,47 @@ class ExperimentAgent:
             decision = self.policy_engine.decide(ctx)
             self._log_decision(device, decision)
 
-            if decision.note:
-                self._write_note(device, decision.note, category="trend")
+            # --- LLM reasoning after stress batch ---
+            _stress_allowed = [
+                AgentAction.CONTINUE_STRESS.value,
+                AgentAction.STOP_STRESS.value,
+                AgentAction.SWITCH_TO_DENSE_MONITORING.value,
+                AgentAction.CHECK_CONTROL_DEVICE.value,
+                AgentAction.INSPECT_NEIGHBORS.value,
+                AgentAction.ESCALATE_AND_CONTINUE.value,
+                AgentAction.ESCALATE_AND_PAUSE.value,
+                AgentAction.FINISH_DEVICE.value,
+            ]
+            llm_stress_result = self._maybe_run_llm_reasoning(
+                device=device,
+                event_type="stress_batch",
+                heuristic_decision=decision,
+                heuristic_allowed_actions=_stress_allowed,
+                metrics=last_metrics,
+                trend_features=tf,
+                neighbor_comparison=nc,
+            )
+            # Optionally apply LLM policy advice (only if mode allows override)
+            decision = self._apply_llm_policy_advice(
+                heuristic_decision=decision,
+                llm_result=llm_stress_result,
+                allowed_actions=_stress_allowed,
+                device=device,
+            )
+
+            # Determine note text (optionally LLM-enriched)
+            note_text = decision.note
+            if (
+                llm_stress_result is not None
+                and self.config.llm.enable_llm_notes
+                and self.llm_note_writer is not None
+                and not note_text  # only enrich if heuristic didn't already write one
+            ):
+                if llm_stress_result.note_text:
+                    note_text = f"[LLM] {llm_stress_result.note_text}"
+
+            if note_text:
+                self._write_note(device, note_text, category="trend")
 
             # --- Execute action ---
             if decision.action == AgentAction.STOP_STRESS:
@@ -638,15 +915,45 @@ class ExperimentAgent:
 
         hyp_labels = [h.hypothesis.value for h in active_hyps[:3]]
 
+        # --- LLM-enhanced alert explanation ---
+        explanation = decision.reason
+        operator_action = self._recommended_action_text(severity_int)
+
+        if (
+            self.llm_alert_writer is not None
+            and self.config.llm.enable_llm_alerts
+            and device.llm_reasoning_events
+        ):
+            # Use the most recent LLM result summary for context
+            last_llm = device.llm_reasoning_events[-1]
+            # Build a minimal LLM result proxy for the alert writer
+            from ..llm.schemas import LLMReasoningResult
+            proxy = LLMReasoningResult(
+                primary_hypotheses=last_llm.get("hypotheses", []),
+                uncertainty_notes=last_llm.get("uncertainty_notes", []),
+                recommended_action=last_llm.get("recommended_action", ""),
+                recommended_action_reason=operator_action,
+                parsing_succeeded=last_llm.get("parsing_succeeded", True),
+            )
+            # Also supply evidence from hypothesis tracker
+            for h in active_hyps[:2]:
+                proxy.evidence_for.extend(h.evidence_for[:1])
+
+            explanation, operator_action = self.llm_alert_writer.write(
+                heuristic_explanation=decision.reason,
+                llm_result=proxy,
+                severity=severity_int,
+            )
+
         alert = self.alert_manager.create_alert(
             run_state=self.run_state,
             device=device,
             severity=severity,
             title=f"[SEV {severity_int}] {decision.reason[:60]}",
-            explanation=decision.reason,
+            explanation=explanation,
             evidence=evidence,
             recent_context=recent_ctx,
-            recommended_action=self._recommended_action_text(severity_int),
+            recommended_action=operator_action,
             hypotheses=hyp_labels,
         )
         self.run_state.record_alert(alert)
@@ -914,6 +1221,9 @@ class ExperimentAgent:
         self.storage.save_devices(self.run_state, self.output_dir)
         self.storage.save_alerts(self.run_state, self.output_dir)
         self.storage.save_hypotheses(self.run_state, self.output_dir)
+        # Save LLM hypothesis updates (only if LLM was used)
+        if self.config.llm.enabled:
+            self.storage.save_llm_summary(self.run_state, self.output_dir)
 
         # Chip map
         chip_map = ChipMapGenerator(self.config)
@@ -945,13 +1255,25 @@ class ExperimentAgent:
             duration = f"{secs:.0f}s"
         active_hyps = self.hypothesis_tracker.get_active()
         hyp_str = ", ".join(h.label for h in active_hyps[:3]) or "None"
+        llm_str = ""
+        if self.config.llm.enabled:
+            n_llm = len(rs.llm_reasoning_records)
+            n_overrides = sum(
+                1 for r in rs.llm_reasoning_records if r.get("llm_action_applied")
+            )
+            llm_str = (
+                f"\nLLM layer: {n_llm} reasoning events | "
+                f"{n_overrides} action override(s)"
+            )
+
         return (
             f"Chip: {rs.chip_id}  Run: {rs.run_id}  Duration: {duration}\n"
             f"Devices: {rs.n_devices_done}/{rs.n_devices_total} done | "
             f"Healthy: {rs.n_healthy} | Degrading: {rs.n_degrading} | "
             f"Failed: {rs.n_failed} | Shorted: {rs.n_shorted} | "
             f"Contact: {rs.n_contact_issue}\n"
-            f"Alerts: {len(rs.alerts)} | Notes: {len(rs.notes)}\n"
+            f"Alerts: {len(rs.alerts)} | Notes: {len(rs.notes)}"
+            f"{llm_str}\n"
             f"Active hypotheses: {hyp_str}\n"
             f"Output: {self.output_dir}"
         )

@@ -108,6 +108,7 @@ class DeviceRecord:
     ix: int                    # column index on the chip grid
     iy: int                    # row index on the chip grid
     is_control_device: bool = False
+    variant_id: str = ""       # set from config variant metadata
 
     # Current state (updated by the agent)
     status: DeviceStatus = DeviceStatus.UNKNOWN
@@ -141,6 +142,9 @@ class DeviceRecord:
     # Self-generated notes from the notes writer
     device_notes: list[str] = field(default_factory=list)
 
+    # LLM reasoning events for this device (summaries for quick inspection)
+    llm_reasoning_events: list[dict] = field(default_factory=list)
+
     # True if the agent has already finished processing this device
     is_done: bool = False
 
@@ -169,6 +173,7 @@ class DeviceRecord:
             "ix": self.ix,
             "iy": self.iy,
             "is_control_device": self.is_control_device,
+            "variant_id": self.variant_id,
             "status": self.status.value,
             "grid_position": self.grid_position.value,
             "protocol_mode": self.protocol_mode.value,
@@ -186,6 +191,7 @@ class DeviceRecord:
             "confirmatory_count": self.confirmatory_count,
             "inconsistent_confirmatory_count": self.inconsistent_confirmatory_count,
             "device_notes": self.device_notes,
+            "n_llm_reasoning_events": len(self.llm_reasoning_events),
             "measurement_start": (
                 self.measurement_start.isoformat() if self.measurement_start else None
             ),

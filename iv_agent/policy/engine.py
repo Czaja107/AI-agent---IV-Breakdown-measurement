@@ -72,12 +72,12 @@ class PolicyEngine:
             return PolicyDecision(
                 action=AgentAction.SKIP_DEVICE,
                 reason=(
-                    f"Device is shorted (R_est = {m.estimated_resistance_ohm:.2e} Ω). "
+                    f"Device is shorted (R_est = {m.estimated_resistance_ohm:.2e} Ohm). "
                     f"Skipping durability testing."
                 ),
                 note=(
                     f"**Shorted device detected.** I(1V) = {m.leakage_at_1v_A:.2e} A, "
-                    f"R_est = {m.estimated_resistance_ohm:.2e} Ω. "
+                    f"R_est = {m.estimated_resistance_ohm:.2e} Ohm. "
                     f"Pre-existing short hypothesis supported."
                 ),
             )

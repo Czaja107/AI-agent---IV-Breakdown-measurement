@@ -193,6 +193,98 @@ class EmailConfig(BaseModel):
     pause_on_severity_4: bool = True
 
 
+# ---------------------------------------------------------------------------
+# LLM configuration
+# ---------------------------------------------------------------------------
+
+class LLMConfig(BaseModel):
+    """
+    Configuration for the optional LLM scientific reasoning layer.
+
+    Set mode to "disabled" to run fully deterministically (default).
+    Set mode to "mock" for demo/test runs without a real API key.
+    Set mode to "openai_like" for OpenAI / Ollama / vLLM backends.
+    """
+    enabled: bool = False
+    mode: str = Field(
+        default="mock",
+        description="'disabled' | 'mock' | 'openai_like'",
+    )
+    model_name: str = "gpt-4o"
+    temperature: float = Field(default=0.2, ge=0.0, le=2.0)
+    max_tokens: int = Field(default=1024, ge=64)
+    api_key: str = ""
+    base_url: str = "https://api.openai.com/v1"
+    timeout_s: int = 60
+
+    # Which parts of the agent use the LLM
+    enable_llm_notes: bool = True
+    enable_llm_alerts: bool = True
+    enable_llm_policy_advice: bool = True
+
+    # "advisory_only" — logs LLM recommendation but never changes the action.
+    # "advisory_with_bounded_override" — allows the LLM to change the action
+    #   if it passes the safety guard (action must be in allowed set and must
+    #   not lower the safety level).
+    advisory_mode: str = Field(
+        default="advisory_only",
+        description="'advisory_only' | 'advisory_with_bounded_override'",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Device structure and fabrication metadata
+# ---------------------------------------------------------------------------
+
+class DeviceStructureMetadataConfig(BaseModel):
+    """Physical description of the capacitor structure."""
+    capacitor_type: str = ""
+    area_um2: Optional[float] = None
+    dielectric_material: str = ""
+    dielectric_thickness_nm: Optional[float] = None
+    top_electrode_material: str = ""
+    bottom_electrode_material: str = ""
+    edge_shape: str = ""
+    design_notes: str = ""
+
+    def to_prompt_dict(self) -> dict:
+        return {k: v for k, v in self.model_dump().items() if v not in (None, "")}
+
+
+class FabricationContextConfig(BaseModel):
+    """Fabrication process details for the device batch."""
+    fab_run_id: str = ""
+    process_split: str = ""
+    deposition_method: str = ""
+    anneal_notes: str = ""
+    etch_notes: str = ""
+    cleaning_notes: str = ""
+    known_fabrication_risks: list[str] = Field(default_factory=list)
+    operator_comments: str = ""
+
+    def to_prompt_dict(self) -> dict:
+        return {k: v for k, v in self.model_dump().items() if v not in (None, "", [])}
+
+
+class VariantMetadata(BaseModel):
+    """
+    Groups one or more devices that share the same structure and process split.
+
+    device_ids is a list of device ID strings (e.g. "CAP_00_00").
+    The LLM will use the structure and fabrication context when reasoning
+    about any device in the list.
+    """
+    variant_id: str
+    description: str = ""
+    device_structure: DeviceStructureMetadataConfig = Field(
+        default_factory=DeviceStructureMetadataConfig
+    )
+    fabrication_context: FabricationContextConfig = Field(
+        default_factory=FabricationContextConfig
+    )
+    device_ids: list[str] = Field(default_factory=list)
+
+
 class RunConfig(BaseModel):
     """Top-level run identification and output settings."""
     chip_id: str
@@ -220,6 +312,14 @@ class AgentConfig(BaseModel):
     protocols: ProtocolsConfig = Field(default_factory=ProtocolsConfig)
     thresholds: ThresholdConfig = Field(default_factory=ThresholdConfig)
     email: EmailConfig = Field(default_factory=EmailConfig)
+    llm: LLMConfig = Field(default_factory=LLMConfig)
+
+    # Chip-level fabrication context (applies to all devices unless overridden by variants)
+    chip_fabrication_context: FabricationContextConfig = Field(
+        default_factory=FabricationContextConfig
+    )
+    # Per-variant device structure and process metadata
+    variants: list[VariantMetadata] = Field(default_factory=list)
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "AgentConfig":

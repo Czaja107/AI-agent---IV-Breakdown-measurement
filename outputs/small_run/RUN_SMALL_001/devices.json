@@ -4,6 +4,7 @@
     "ix": 0,
     "iy": 0,
     "is_control_device": false,
+    "variant_id": "MIM_CENTRE",
     "status": "healthy",
     "grid_position": "corner",
     "protocol_mode": "normal_stress",
@@ -21,17 +22,23 @@
     "confirmatory_count": 0,
     "inconsistent_confirmatory_count": 0,
     "device_notes": [
-      "**Healthy device.** I(1V) = 1.31e-12 A. Normal stress protocol initiated.",
+      "**Healthy device.** I(1V) = 1.31e-12 A. Normal stress protocol initiated.  \n[LLM] LLM analysis [health_check] for CAP_00",
+      "[LLM] LLM analysis [stress_batch] for CAP_00_00: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
+      "[LLM] LLM analysis [stress_batch] for CAP_00_00: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
+      "[LLM] LLM analysis [stress_batch] for CAP_00_00: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
+      "[LLM] LLM analysis [stress_batch] for CAP_00_00: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
       "**Stress testing complete** (5 batches). Device status: healthy."
     ],
-    "measurement_start": "2026-04-13T00:20:32.519117",
-    "measurement_end": "2026-04-13T00:20:32.541415"
+    "n_llm_reasoning_events": 6,
+    "measurement_start": "2026-04-16T23:47:58.980500",
+    "measurement_end": "2026-04-16T23:47:59.011356"
   },
   {
     "device_id": "CAP_00_01",
     "ix": 1,
     "iy": 0,
     "is_control_device": false,
+    "variant_id": "MIM_CENTRE",
     "status": "healthy",
     "grid_position": "edge",
     "protocol_mode": "dense_monitoring",
@@ -49,19 +56,22 @@
     "confirmatory_count": 0,
     "inconsistent_confirmatory_count": 0,
     "device_notes": [
-      "**Healthy device.** I(1V) = 4.49e-12 A. Normal stress protocol initiated.",
+      "**Healthy device.** I(1V) = 4.49e-12 A. Normal stress protocol initiated.  \n[LLM] LLM analysis [health_check] for CAP_00",
       "**Compliance hit during stress (batch 1).** V_bd = 12.0 V. Dense monitoring activated.",
       "Protocol switched to DENSE_MONITORING at batch 1. Reason: Compliance hit at 12.0 V during stress batch 1. Switching to d",
+      "[LLM] LLM analysis [stress_batch] for CAP_00_01: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
       "**Dense monitoring: device stabilised** after 3 batches."
     ],
-    "measurement_start": "2026-04-13T00:20:32.542167",
-    "measurement_end": "2026-04-13T00:20:32.558254"
+    "n_llm_reasoning_events": 4,
+    "measurement_start": "2026-04-16T23:47:59.011992",
+    "measurement_end": "2026-04-16T23:47:59.033954"
   },
   {
     "device_id": "CAP_00_02",
     "ix": 2,
     "iy": 0,
     "is_control_device": false,
+    "variant_id": "MIM_CENTRE",
     "status": "healthy",
     "grid_position": "corner",
     "protocol_mode": "normal_stress",
@@ -79,17 +89,23 @@
     "confirmatory_count": 0,
     "inconsistent_confirmatory_count": 0,
     "device_notes": [
-      "**Healthy device.** I(1V) = 1.23e-12 A. Normal stress protocol initiated.",
+      "**Healthy device.** I(1V) = 1.23e-12 A. Normal stress protocol initiated.  \n[LLM] LLM analysis [health_check] for CAP_00",
+      "[LLM] LLM analysis [stress_batch] for CAP_00_02: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
+      "[LLM] LLM analysis [stress_batch] for CAP_00_02: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
+      "[LLM] LLM analysis [stress_batch] for CAP_00_02: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
+      "[LLM] LLM analysis [stress_batch] for CAP_00_02: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
       "**Stress testing complete** (5 batches). Device status: healthy."
     ],
-    "measurement_start": "2026-04-13T00:20:32.558937",
-    "measurement_end": "2026-04-13T00:20:32.581154"
+    "n_llm_reasoning_events": 6,
+    "measurement_start": "2026-04-16T23:47:59.034564",
+    "measurement_end": "2026-04-16T23:47:59.068125"
   },
   {
     "device_id": "CAP_01_00",
     "ix": 0,
     "iy": 1,
     "is_control_device": false,
+    "variant_id": "MIM_CENTRE",
     "status": "contact_issue",
     "grid_position": "edge",
     "protocol_mode": "health_check",
@@ -109,18 +125,20 @@
     "confirmatory_count": 1,
     "inconsistent_confirmatory_count": 0,
     "device_notes": [
-      "**Contact issue on first health check.** I(Vmax) = -1.06e-13 A. Scheduling retry.",
+      "**Contact issue on first health check.** I(Vmax) = -1.06e-13 A. Scheduling retry.  \n[LLM] LLM analysis [health_check] fo",
       "**Persistent contact issue after 1 attempts.** Marking as CONTACT_ISSUE. Consider probe inspection.",
       "**Persistent contact issue after 1 attempts.** Marking as CONTACT_ISSUE. Consider probe inspection."
     ],
-    "measurement_start": "2026-04-13T00:20:32.582965",
-    "measurement_end": "2026-04-13T00:20:32.589584"
+    "n_llm_reasoning_events": 1,
+    "measurement_start": "2026-04-16T23:47:59.069867",
+    "measurement_end": "2026-04-16T23:47:59.078193"
   },
   {
     "device_id": "CAP_01_01",
     "ix": 1,
     "iy": 1,
     "is_control_device": true,
+    "variant_id": "MIM_CENTRE",
     "status": "healthy",
     "grid_position": "center",
     "protocol_mode": "health_check",
@@ -140,17 +158,19 @@
     "confirmatory_count": 0,
     "inconsistent_confirmatory_count": 0,
     "device_notes": [
-      "**Healthy device.** I(1V) = 8.88e-13 A. Normal stress protocol initiated.",
+      "**Healthy device.** I(1V) = 8.88e-13 A. Normal stress protocol initiated.  \n[LLM] LLM analysis [health_check] for CAP_01",
       "**Scheduled control device measurement.** Status: healthy. I(1V) = 8.88e-13 A."
     ],
-    "measurement_start": "2026-04-13T00:20:32.590293",
-    "measurement_end": "2026-04-13T00:20:32.599487"
+    "n_llm_reasoning_events": 1,
+    "measurement_start": "2026-04-16T23:47:59.078801",
+    "measurement_end": "2026-04-16T23:47:59.083627"
   },
   {
     "device_id": "CAP_01_02",
     "ix": 2,
     "iy": 1,
     "is_control_device": false,
+    "variant_id": "MIM_CENTRE",
     "status": "healthy",
     "grid_position": "edge",
     "protocol_mode": "normal_stress",
@@ -168,17 +188,23 @@
     "confirmatory_count": 0,
     "inconsistent_confirmatory_count": 0,
     "device_notes": [
-      "**Healthy device.** I(1V) = 1.60e-12 A. Normal stress protocol initiated.",
+      "**Healthy device.** I(1V) = 1.60e-12 A. Normal stress protocol initiated.  \n[LLM] LLM analysis [health_check] for CAP_01",
+      "[LLM] LLM analysis [stress_batch] for CAP_01_02: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
+      "[LLM] LLM analysis [stress_batch] for CAP_01_02: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
+      "[LLM] LLM analysis [stress_batch] for CAP_01_02: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
+      "[LLM] LLM analysis [stress_batch] for CAP_01_02: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Co",
       "**Stress testing complete** (5 batches). Device status: healthy."
     ],
-    "measurement_start": "2026-04-13T00:20:32.600375",
-    "measurement_end": "2026-04-13T00:20:32.623804"
+    "n_llm_reasoning_events": 6,
+    "measurement_start": "2026-04-16T23:47:59.084197",
+    "measurement_end": "2026-04-16T23:47:59.113368"
   },
   {
     "device_id": "CAP_02_00",
     "ix": 0,
     "iy": 2,
     "is_control_device": false,
+    "variant_id": "MIM_CORNER",
     "status": "shorted",
     "grid_position": "corner",
     "protocol_mode": "health_check",
@@ -198,17 +224,19 @@
     "confirmatory_count": 0,
     "inconsistent_confirmatory_count": 0,
     "device_notes": [
-      "**Shorted device detected.** I(1V) = 1.22e-03 A, R_est = 8.17e+02 \u03a9. Pre-existing short hypothesis supported.",
-      "**Shorted device detected.** I(1V) = 1.22e-03 A, R_est = 8.17e+02 \u03a9. Pre-existing short hypothesis supported."
+      "**Shorted device detected.** I(1V) = 1.22e-03 A, R_est = 8.17e+02 Ohm. Pre-existing short hypothesis supported.  \n[LLM] ",
+      "**Shorted device detected.** I(1V) = 1.22e-03 A, R_est = 8.17e+02 Ohm. Pre-existing short hypothesis supported."
     ],
-    "measurement_start": "2026-04-13T00:20:32.625106",
-    "measurement_end": "2026-04-13T00:20:32.631862"
+    "n_llm_reasoning_events": 1,
+    "measurement_start": "2026-04-16T23:47:59.114512",
+    "measurement_end": "2026-04-16T23:47:59.119005"
   },
   {
     "device_id": "CAP_02_01",
     "ix": 1,
     "iy": 2,
     "is_control_device": false,
+    "variant_id": "MIM_CORNER",
     "status": "failed",
     "grid_position": "edge",
     "protocol_mode": "dense_monitoring",
@@ -230,20 +258,23 @@
     "confirmatory_count": 0,
     "inconsistent_confirmatory_count": 0,
     "device_notes": [
-      "**Healthy device.** I(1V) = 1.12e-11 A. Normal stress protocol initiated.",
+      "**Healthy device.** I(1V) = 1.12e-11 A. Normal stress protocol initiated.  \n[LLM] LLM analysis [health_check] for CAP_02",
       "**Compliance hit during stress (batch 1).** V_bd = 8.5 V. Dense monitoring activated.",
       "Protocol switched to DENSE_MONITORING at batch 1. Reason: Compliance hit at 8.5 V during stress batch 1. Switching to de",
+      "[LLM] LLM analysis [stress_batch] for CAP_02_01: Primary evidence supports CORNER_EFFECT and TRUE_DEVICE_DEGRADATION. Fa",
       "**Device failed during dense monitoring** (batch 3). V_bd = 7.25 V.",
       "Device marked FAILED after 3 stress batches. Reason: Compliance hit during dense monitoring (batch 3). Device has failed"
     ],
-    "measurement_start": "2026-04-13T00:20:32.632542",
-    "measurement_end": "2026-04-13T00:20:32.658725"
+    "n_llm_reasoning_events": 4,
+    "measurement_start": "2026-04-16T23:47:59.119531",
+    "measurement_end": "2026-04-16T23:47:59.140384"
   },
   {
     "device_id": "CAP_02_02",
     "ix": 2,
     "iy": 2,
     "is_control_device": false,
+    "variant_id": "MIM_CORNER",
     "status": "failed",
     "grid_position": "corner",
     "protocol_mode": "dense_monitoring",
@@ -270,10 +301,12 @@
       "**Control device check** (CAP_01_01) triggered by activity on CAP_02_02. Result: HEALTHY \u2713. Setup appears stable. Observ",
       "**Compliance hit during stress (batch 1).** V_bd = 9.5 V. Dense monitoring activated.",
       "Protocol switched to DENSE_MONITORING at batch 1. Reason: Compliance hit at 9.5 V during stress batch 1. Switching to de",
+      "[LLM] LLM analysis [stress_batch] for CAP_02_02: Primary evidence supports CONTACT_DEGRADATION. Fabrication note: Corner",
       "**Device failed during dense monitoring** (batch 3). V_bd = 7.25 V.",
       "Device marked FAILED after 3 stress batches. Reason: Compliance hit during dense monitoring (batch 3). Device has failed"
     ],
-    "measurement_start": "2026-04-13T00:20:32.662966",
-    "measurement_end": "2026-04-13T00:20:32.687526"
+    "n_llm_reasoning_events": 4,
+    "measurement_start": "2026-04-16T23:47:59.142403",
+    "measurement_end": "2026-04-16T23:47:59.165035"
   }
 ]

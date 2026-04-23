@@ -4,8 +4,8 @@
 |-------|-------|
 | Chip ID | `SMALL_CHIP_001` |
 | Run ID | `RUN_SMALL_001` |
-| Start | 2026-04-13 00:20:32 |
-| End | 2026-04-13 00:20:32 |
+| Start | 2026-04-16 23:47:58 |
+| End | 2026-04-16 23:47:59 |
 | Duration | 0 s (0.0 min) |
 | Grid | 3 × 3 = 9 devices |
 | Operator | ci |
@@ -29,9 +29,9 @@ Max consecutive failures: **4**
 
 | Hypothesis | Support | Evidence |
 |-----------|---------|---------|
-| True Device Degradation | 1.00 | [rapid_degradation] trend=near_breakdown |
-| Corner Effect | 0.60 | [spatial_cluster] 2-device cluster in bottom-left region |
-| Local Spatial Defect | 0.45 | [spatial_cluster] 2-device cluster in bottom-left region |
+| True Device Degradation | 1.00 | [llm_reasoning] LLM: No immediate diagnostic concern; procee |
+| Corner Effect | 0.92 | [llm_reasoning] LLM: No immediate diagnostic concern; procee |
+| Local Spatial Defect | 0.53 | [llm_reasoning] LLM: No immediate diagnostic concern; procee |
 
 ## Alerts (0 total)
 
@@ -39,45 +39,48 @@ _No alerts raised._
 
 ## Experiment Notes (last 20)
 
-**[00:20:32] `CAP_01_01`** — **Healthy device.** I(1V) = 8.88e-13 A. Normal stress protocol initiated.
+**[23:47:59] `CAP_01_02`** — [LLM] LLM analysis [stress_batch] for CAP_01_02: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Corner devices may have non-uniform dielectric at electrode edges. Trend state: stable. Evidence strength is moderate; additional measurements are recommended before drawing firm conclusions.
 
-**[00:20:32] `CAP_01_01`** — **Scheduled control device measurement.** Status: healthy. I(1V) = 8.88e-13 A.
+**[23:47:59] `CAP_01_02`** — **Stress testing complete** (5 batches). Device status: healthy.
 
-**[00:20:32] `CAP_01_02`** — **Healthy device.** I(1V) = 1.60e-12 A. Normal stress protocol initiated.
+**[23:47:59] `CAP_02_00`** — **Shorted device detected.** I(1V) = 1.22e-03 A, R_est = 8.17e+02 Ohm. Pre-existing short hypothesis supported.  
+[LLM] LLM analysis [health_check] for CAP_02_00: Primary evidence supports CORNER_EFFECT and LOCAL_SPATIAL_DEFECT. Fabrication note: Corner electrode geometry causes enhanced local field stress. Trend state: insufficient_data. Evidence strength is moderate; additional measurements are recommended before drawing firm conclusions.
 
-**[00:20:32] `CAP_01_02`** — **Stress testing complete** (5 batches). Device status: healthy.
+**[23:47:59] `CAP_02_00`** — **Shorted device detected.** I(1V) = 1.22e-03 A, R_est = 8.17e+02 Ohm. Pre-existing short hypothesis supported.
 
-**[00:20:32] `CAP_02_00`** — **Shorted device detected.** I(1V) = 1.22e-03 A, R_est = 8.17e+02 Ω. Pre-existing short hypothesis supported.
+**[23:47:59] `CAP_02_01`** — **Healthy device.** I(1V) = 1.12e-11 A. Normal stress protocol initiated.  
+[LLM] LLM analysis [health_check] for CAP_02_01: Primary evidence supports TRUE_DEVICE_DEGRADATION. Fabrication note: Corner electrode geometry causes enhanced local field stress. Trend state: insufficient_data. Evidence strength is moderate; additional measurements are recommended before drawing firm conclusions.
 
-**[00:20:32] `CAP_02_00`** — **Shorted device detected.** I(1V) = 1.22e-03 A, R_est = 8.17e+02 Ω. Pre-existing short hypothesis supported.
+**[23:47:59] `CAP_02_01`** — **Compliance hit during stress (batch 1).** V_bd = 8.5 V. Dense monitoring activated.
 
-**[00:20:32] `CAP_02_01`** — **Healthy device.** I(1V) = 1.12e-11 A. Normal stress protocol initiated.
+**[23:47:59] `CAP_02_01`** — Protocol switched to DENSE_MONITORING at batch 1. Reason: Compliance hit at 8.5 V during stress batch 1. Switching to dense monitoring.
 
-**[00:20:32] `CAP_02_01`** — **Compliance hit during stress (batch 1).** V_bd = 8.5 V. Dense monitoring activated.
+**[23:47:59] `CAP_02_01`** — [LLM] LLM analysis [stress_batch] for CAP_02_01: Primary evidence supports CORNER_EFFECT and TRUE_DEVICE_DEGRADATION. Fabrication note: Corner electrode geometry causes enhanced local field stress. Trend state: near_breakdown. Evidence is consistent with a meaningful device-level event.
 
-**[00:20:32] `CAP_02_01`** — Protocol switched to DENSE_MONITORING at batch 1. Reason: Compliance hit at 8.5 V during stress batch 1. Switching to dense monitoring.
+**[23:47:59] `CAP_02_01`** — **Device failed during dense monitoring** (batch 3). V_bd = 7.25 V.
 
-**[00:20:32] `CAP_02_01`** — **Device failed during dense monitoring** (batch 3). V_bd = 7.25 V.
+**[23:47:59] `CAP_02_01`** — Device marked FAILED after 3 stress batches. Reason: Compliance hit during dense monitoring (batch 3). Device has failed.
 
-**[00:20:32] `CAP_02_01`** — Device marked FAILED after 3 stress batches. Reason: Compliance hit during dense monitoring (batch 3). Device has failed.
+**[23:47:59]** — **Spatial cluster detected**: 2-device cluster in bottom-left region. Members: CAP_01_00, CAP_02_01. Region: bottom-left.
 
-**[00:20:32]** — **Spatial cluster detected**: 2-device cluster in bottom-left region. Members: CAP_01_00, CAP_02_01. Region: bottom-left.
+**[23:47:59] `CAP_02_02`** — **High suspicion despite OK metrics.** Reasons: consecutive_device_failures: 3 consecutive device failures (threshold for suspicion: 2); sudden_failure_after_healthy_streak: 3 consecutive failures following a run of 5 healthy devices — sudden contact or probe degradation suspected. Confirmatory check scheduled.  
+[LLM] LLM analysis [health_check] for CAP_02_02: Primary evidence supports CONTACT_DEGRADATION. Fabrication note: Corner electrode geometry causes enhanced local field stress. Trend state: insufficient_data. Evidence is consistent with a meaningful device-level event.
 
-**[00:20:32] `CAP_02_02`** — **High suspicion despite OK metrics.** Reasons: consecutive_device_failures: 3 consecutive device failures (threshold for suspicion: 2); sudden_failure_after_healthy_streak: 3 consecutive failures following a run of 5 healthy devices — sudden contact or probe degradation suspected. Confirmatory check scheduled.
+**[23:47:59] `CAP_02_02`** — **Confirmatory check passed** on CAP_02_02. Stress testing initiated.
 
-**[00:20:32] `CAP_02_02`** — **Confirmatory check passed** on CAP_02_02. Stress testing initiated.
+**[23:47:59] `CAP_02_02`** — **Control device check** (CAP_01_01) triggered by activity on CAP_02_02. Result: HEALTHY ✓. Setup appears stable. Observed issues are likely real device/process behaviour. CONTACT_DEGRADATION or LOCAL_SPATIAL_DEFECT hypothesis strengthened.
 
-**[00:20:32] `CAP_02_02`** — **Control device check** (CAP_01_01) triggered by activity on CAP_02_02. Result: HEALTHY ✓. Setup appears stable. Observed issues are likely real device/process behaviour. CONTACT_DEGRADATION or LOCAL_SPATIAL_DEFECT hypothesis strengthened.
+**[23:47:59] `CAP_02_02`** — **Compliance hit during stress (batch 1).** V_bd = 9.5 V. Dense monitoring activated.
 
-**[00:20:32] `CAP_02_02`** — **Compliance hit during stress (batch 1).** V_bd = 9.5 V. Dense monitoring activated.
+**[23:47:59] `CAP_02_02`** — Protocol switched to DENSE_MONITORING at batch 1. Reason: Compliance hit at 9.5 V during stress batch 1. Switching to dense monitoring.
 
-**[00:20:32] `CAP_02_02`** — Protocol switched to DENSE_MONITORING at batch 1. Reason: Compliance hit at 9.5 V during stress batch 1. Switching to dense monitoring.
+**[23:47:59] `CAP_02_02`** — [LLM] LLM analysis [stress_batch] for CAP_02_02: Primary evidence supports CONTACT_DEGRADATION. Fabrication note: Corner electrode geometry causes enhanced local field stress. Control device result: healthy. Trend state: near_breakdown. Evidence is consistent with a meaningful device-level event.
 
-**[00:20:32] `CAP_02_02`** — **Device failed during dense monitoring** (batch 3). V_bd = 7.25 V.
+**[23:47:59] `CAP_02_02`** — **Device failed during dense monitoring** (batch 3). V_bd = 7.25 V.
 
-**[00:20:32] `CAP_02_02`** — Device marked FAILED after 3 stress batches. Reason: Compliance hit during dense monitoring (batch 3). Device has failed.
+**[23:47:59] `CAP_02_02`** — Device marked FAILED after 3 stress batches. Reason: Compliance hit during dense monitoring (batch 3). Device has failed.
 
-**[00:20:32]** — **Spatial cluster detected**: 3-device cluster in bottom-center region. Members: CAP_01_00, CAP_02_01, CAP_02_02. Region: bottom-center.
+**[23:47:59]** — **Spatial cluster detected**: 3-device cluster in bottom-center region. Members: CAP_01_00, CAP_02_01, CAP_02_02. Region: bottom-center.
 
 ## Device Summary Table
 
@@ -94,4 +97,4 @@ _No alerts raised._
 | CAP_02_02 | [2,2] | failed | near_breakdown | critical (1.00) | 1.17e-11 | 3 |
 
 ---
-_Generated by IV-Agent v0.1.0 on 2026-04-13 00:20:33_
+_Generated by IV-Agent v0.1.0 on 2026-04-16 23:48:00_

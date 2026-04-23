@@ -6,11 +6,16 @@ explanations.  Hypotheses are updated by heuristic rules — NOT by Bayesian
 inference.  The goal is full auditability: each update has a clear English
 reason attached.
 
+The tracker also accepts updates from the LLM layer via update_from_llm_result().
+LLM-derived updates use a smaller support delta to reflect the advisory nature
+of the LLM; the heuristic rules remain the primary evidence source.
+
 Hypotheses are consumed by the notes writer and escalation system to produce
 human-readable explanations.
 """
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, TYPE_CHECKING
@@ -24,6 +29,9 @@ if TYPE_CHECKING:
     from .suspicion import SuspicionResult
     from .neighbors import NeighborComparison, SpatialCluster
     from .trends import TrendFeatures
+    from ..llm.schemas import LLMReasoningResult
+
+logger = logging.getLogger(__name__)
 
 
 # Support level delta constants
@@ -191,6 +199,79 @@ class HypothesisTracker:
         if device.grid_position in (GridPosition.CORNER, GridPosition.EDGE):
             if device.status in (DeviceStatus.FAILED, DeviceStatus.DEGRADING, DeviceStatus.NEAR_FAILURE):
                 self._update(HypothesisType.CORNER_EFFECT, WEAK_SUPPORT, event)
+
+    def update_from_llm_result(
+        self,
+        llm_result: "LLMReasoningResult",
+        device: "DeviceRecord",
+    ) -> None:
+        """
+        Update hypothesis support from the LLM's structured reasoning output.
+
+        LLM-sourced evidence uses WEAK_SUPPORT deltas to reflect its advisory
+        (non-authoritative) nature.  Only hypothesis types that exist in
+        HypothesisType are processed; unknown names are logged and skipped.
+        """
+        if not llm_result.parsing_succeeded:
+            return
+
+        event_base = HypothesisEvent(
+            event_type="llm_reasoning",
+            device_id=device.device_id,
+        )
+
+        for hyp_name in llm_result.primary_hypotheses:
+            # Normalise: accept both "TRUE_DEVICE_DEGRADATION" and
+            # "true_device_degradation" formats.
+            normalised = hyp_name.lower()
+            try:
+                h_type = HypothesisType(normalised)
+            except ValueError:
+                logger.debug(
+                    "LLM proposed unknown hypothesis type %r for %s — skipping.",
+                    hyp_name, device.device_id,
+                )
+                continue
+
+            reason = (llm_result.recommended_action_reason or "LLM analysis")[:100]
+            ev = HypothesisEvent(
+                event_type="llm_reasoning",
+                device_id=device.device_id,
+                description=f"LLM: {reason}",
+            )
+            self._update(h_type, WEAK_SUPPORT, ev)
+
+            # Attach evidence strings from LLM output
+            h = self.run_state.hypotheses[h_type.value]
+            for ef in llm_result.evidence_for[:2]:
+                entry = f"[llm] {ef[:120]}"
+                if entry not in h.evidence_for:
+                    h.evidence_for.append(entry)
+            for ea in llm_result.evidence_against[:1]:
+                entry = f"[llm] {ea[:120]}"
+                if entry not in h.evidence_against:
+                    h.evidence_against.append(entry)
+
+        # Structure/process links also weakly support process-split hypotheses
+        if llm_result.structure_or_process_links:
+            for h_type in (
+                HypothesisType.PROCESS_SPLIT_WEAKNESS,
+                HypothesisType.FABRICATION_INDUCED_DIELECTRIC_WEAKNESS,
+            ):
+                if h_type.value in self.run_state.hypotheses:
+                    # Only boost if LLM explicitly named them
+                    if h_type.value.upper() in [h.upper() for h in llm_result.primary_hypotheses]:
+                        pass  # already handled above
+                    elif any(
+                        "process" in link.lower() or "fabricat" in link.lower()
+                        for link in llm_result.structure_or_process_links
+                    ):
+                        ev = HypothesisEvent(
+                            event_type="llm_structure_link",
+                            device_id=device.device_id,
+                            description=llm_result.structure_or_process_links[0][:100],
+                        )
+                        self._update(h_type, WEAK_SUPPORT * 0.5, ev)
 
     # -----------------------------------------------------------------------
     # Internal helpers

@@ -1,5 +1,5 @@
 {
-  "checkpoint_time": "2026-04-13T00:20:32.687541",
+  "checkpoint_time": "2026-04-16T23:47:59.165044",
   "n_devices_done": 9,
   "n_devices_total": 9,
   "n_healthy": 5,
@@ -9,10 +9,13 @@
   "consecutive_failures": 4,
   "global_suspicion_score": 0.0,
   "n_alerts": 0,
-  "n_notes": 30,
+  "n_notes": 45,
   "hypotheses": {
     "true_device_degradation": 1.0,
-    "local_spatial_defect": 0.3,
-    "corner_effect": 0.3
+    "contact_degradation": 0.22,
+    "local_spatial_defect": 0.38,
+    "corner_effect": 0.62,
+    "process_split_weakness": 0.2,
+    "fabrication_induced_dielectric_weakness": 0.28
   }
 }

@@ -85,7 +85,13 @@ class Note(BaseModel):
 # ---------------------------------------------------------------------------
 
 class HypothesisType(str, Enum):
-    """The set of explanatory hypotheses the agent reasons over."""
+    """
+    The set of explanatory hypotheses the agent reasons over.
+
+    The first seven are heuristic (updated by deterministic rules).
+    The last four are LLM-aware (introduced / updated by the LLM layer).
+    """
+    # --- Heuristic hypotheses ---
     TRUE_DEVICE_DEGRADATION = "true_device_degradation"
     PRE_EXISTING_SHORT = "pre_existing_short"
     CONTACT_DEGRADATION = "contact_degradation"
@@ -93,6 +99,12 @@ class HypothesisType(str, Enum):
     LOCAL_SPATIAL_DEFECT = "local_spatial_defect"
     CORNER_EFFECT = "corner_effect"
     MEASUREMENT_NOISE_ISSUE = "measurement_noise_issue"
+
+    # --- LLM-aware hypotheses (require device structure / process metadata) ---
+    PROCESS_SPLIT_WEAKNESS = "process_split_weakness"
+    STRUCTURE_DEPENDENT_FIELD_STRESS = "structure_dependent_field_stress"
+    FABRICATION_INDUCED_DIELECTRIC_WEAKNESS = "fabrication_induced_dielectric_weakness"
+    EDGE_GEOMETRY_SENSITIVITY = "edge_geometry_sensitivity"
 
 
 class HypothesisRecord(BaseModel):
@@ -178,6 +190,9 @@ class RunState:
     pause_reason: Optional[str] = None
     is_complete: bool = False
     out_of_sequence_checks: list[str] = field(default_factory=list)  # device_ids
+
+    # LLM reasoning records (one per reasoning event; also saved to llm_reasoning.jsonl)
+    llm_reasoning_records: list[dict] = field(default_factory=list)
 
     # Auto-incremented IDs for alerts and notes
     _next_alert_id: int = field(default=0, repr=False)

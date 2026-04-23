@@ -1,31 +1,33 @@
-Autonomous AI agent performing IV cap breakdown reliability characterization (AI PhD student)
+IV-Agent Autonomous cap Breakdown reliability characterization (AI PhD student)
 
-This is not just a scripted measurement loop! The IV agent makes PhD-student-like decisions during a run. It adapts its measurement plan based on what it observes, reasons about causes, detects spatial and temporal trends, and sends you an email when something goes wrong. Once it's done measuring, it sends you a summary note with the observations.
+An agentic experiment manager for capacitor I–V breakdown durability measurements.
+
+This is not just a scripted measurement loop! The IV agent makes PhD-student-like decisions during a run. It adapts its measurement plan based on what it observes, reasons about causes, detects spatial and temporal trends, and sends you an email when something goes wrong. Once it's done measuring, it send you a summary with notes with the observations.
 
 ---
 
 ## What it does
 
-IV-Agent orchestrates reliability characterisation of a 2D grid of capacitor devices (MIM, MOS, or similar dielectrics) on a chip. The agent:
+IV-Agent orchestrates reliability characterisation of a 2D grid of on-chip capacitor devices (MIM, MOS, or similar dielectrics). The agent:
 
 1. Steps through every device in the grid
 2. Runs an initial I–V health-check measurement
-3. **Decides** whether the device is healthy, shorted, degrading, or has a contact issue
-4. If healthy, begins repeated stress / durability sweeps
-5. After each batch analyses the temporal trend and decides whether to continue, switch protocol, or stop
+3. *Decides* whether the device is healthy, shorted, degrading, or has a contact issue
+4. If healthy — begins repeated stress / durability sweeps
+5. After each batch — analyses the temporal trend and decides whether to continue, switch protocol, or stop
 6. Continuously compares each device to its neighbours and flags spatial anomalies
-7. Maintains a **suspicion score** that triggers extra actions (retries, control checks, escalations)
-8. Tracks structured **hypotheses** about what is happening and updates them with evidence.
-9. Writes self-generated **experiment notes** in plain language
-10. Sends **severity-graded alerts** and optionally pauses the run when PhD student intervention is needed
+7. Maintains a *suspicion score* that triggers extra actions (retries, control checks, escalations)
+8. Tracks structured *hypotheses* about what is happening and updates them with evidence.
+9. Writes self-generated *experiment notes* in plain language
+10. Sends *severity-graded alerts* and optionally pauses the run when human intervention is needed
 
-Agentic/AI capabilities are **highlighted** (Reflecting my behavior in the lab as a PhD student)
-
+Agentic/AI capabilities are *highlighted* (Reflecting my behavior in the lab as a PhD student)
+---
 
 ## Key agentic features
 
-### 1. Suspicion engine (reflecting PhD student's thinking when debugging)
-The agent maintains a continuous suspicion score for each device and for the experiment overall. Suspicion is raised by:
+### 1. Suspicion engine (reflecting PhD student debugging skills)
+The agent maintains a continuous suspicion score (0–1) for each device and for the experiment overall. Suspicion is raised by:
 - Consecutive device failures after a healthy streak
 - Repeated inconsistency between confirmatory (control) measurements
 - A device's leakage being much higher than its neighbours
@@ -33,7 +35,7 @@ The agent maintains a continuous suspicion score for each device and for the exp
 - Noisy or near-zero measurement traces
 - A known healthy control device showing unexpected behaviour
 
-Suspicion is not just logged - it triggers extra actions such as confirmatory repeats, control device checks, and escalation.
+Suspicion is not just logged — it triggers extra actions such as confirmatory repeats, control device checks, and escalation.
 
 ### 2. Hypothesis tracking (Checking for specific reasons of failure I usually observe in measurements)
 The agent maintains structured, explainable beliefs about what may be causing observed behaviour:
@@ -68,7 +70,7 @@ For each device, the agent tracks how leakage and breakdown voltage evolve acros
 | `rapidly_worsening` | Leakage growing faster than the suspicious threshold |
 | `near_breakdown` | Compliance current hit frequently |
 | `abrupt_failure` | Sudden large leakage jump |
-| `recovering` | Leakage decreasing (unusual - worth noting) |
+| `recovering` | Leakage decreasing (unusual — worth noting) |
 | `ambiguous` | Inconsistent direction |
 
 Trend state directly influences the next action selected by the policy engine.
@@ -93,7 +95,7 @@ One or more grid positions can be designated as known-healthy **control devices*
 - **Control healthy** -> the observed issues are real device/process behaviour. `CONTACT_DEGRADATION` or `LOCAL_SPATIAL_DEFECT` hypothesis supported.
 - **Control degraded** -> instrument drift or probe-tip problem suspected. `SETUP_DRIFT` hypothesis supported. Immediate escalation.
 
-### 7. Self-generated experiment logs & Notes
+### 7. Self-generated experiment notes
 The agent continuously writes concise, factual notes. Here are some examples from previous runs:
 
 ```
@@ -115,32 +117,6 @@ The agent continuously writes concise, factual notes. Here are some examples fro
   in bottom-left region: [CAP_03_00, CAP_03_01, CAP_03_02, CAP_03_03].
   CORNER_EFFECT hypothesis supported.
 ```
-Then, the agent summarizes the findings in a short note. Example:
-"Run Summary - IV Breakdown
-Run ID: RUN_001
-Chip ID: CHIP_001
-Grid: 25 × 25 (CAP_00_00 → CAP_25_25)
-
-Completed full automated I–V reliability characterization across all 625 devices.
-
-Key observations:
-1. Healthy baseline region:
-Devices CAP_00_00 → CAP_02_00 and CAP_00_01 exhibited stable leakage (~1e-11–1e-10 A at Vmax) with no significant degradation over 5 stress cycles.
-2. Slow degradation:
-CAP_03_00 showed gradual leakage increase (×6 over 5 batches) with breakdown voltage shifting from ~9.8 V → ~8.9 V. Classified as SLOWLY_WORSENING.
-3. Contact-related failures:
-CAP_00_01, CAP_01_01: near-zero current traces on initial sweeps
-Confirmatory measurements failed twice → marked as CONTACT_ISSUE
-Suspicion triggered control check at CAP_02_02 → control remained stable
-→ supports CONTACT_DEGRADATION (local)
-4. Abrupt breakdown event:
-CAP_02_03:
-Passed health check
-Hit compliance at 6.8 V during batch 3
-Leakage increased >100× within 2 cycles
-→ switched to DENSE_MONITORING, classified as FAILED (abrupt_breakdown)
-"
-
 
 Notes are saved as `notes.md` (human-readable) and `notes.jsonl` (machine-readable).
 
@@ -213,9 +189,9 @@ graph TD
 
 ---
 
-## Extra: I built a small, simplified simulator of the probe + oscilloscope setup. (If the probe station is too booked/does not work and I want to test updates to my agent:)
+## Extra: I built a small, simplified simulator of the probe + oscilloscope setup. (If the gax probe station is too booked/does not work and I want to test updates to my agent:)
 
- Here's the file that simulates it: `instruments/simulator.py`
+ Here's the file simualtes it: `instruments/simulator.py`
  
  The simulator:
 
@@ -449,16 +425,248 @@ iv_agent/
 │   └── alerts.py          Alert creation and SMTP dispatch
 ├── storage/
 │   └── persistence.py     JSON/CSV file I/O and checkpointing
+├── llm/                   ← NEW: LLM scientific reasoning layer
+│   ├── client.py          LLMClient interface + NoOp / Mock / OpenAILike backends
+│   ├── schemas.py         ScientificReasoningContext, LLMReasoningResult, LLMReasoningRecord
+│   ├── prompts.py         Prompt templates (hypothesis, policy, note, alert)
+│   ├── context_builder.py Assembles ScientificReasoningContext from agent state
+│   ├── scientific_reasoner.py  Main LLM reasoning module
+│   ├── note_writer.py     LLM-enriched experiment notes
+│   ├── alert_writer.py    LLM-enriched escalation explanations
+│   └── policy_advisor.py  Bounded policy advice with safety guard
 └── tests/
     ├── test_features.py   Feature extraction + health classification tests
     ├── test_policy.py     Policy engine decision tests
-    └── test_simulation.py Simulator + integration tests
+    ├── test_simulation.py Simulator + integration tests
+    └── test_llm.py        ← NEW: LLM layer tests (41 tests)
 
 configs/
-├── demo.yaml              5×4 full demo scenario
-└── demo_small.yaml        3×3 quick test
+├── demo.yaml              5×4 full demo scenario (with LLM + variant metadata)
+└── demo_small.yaml        3×3 quick test (with LLM + variant metadata)
 
 outputs/                   (generated during runs)
 ```
+
+---
+
+## LLM Scientific Reasoning Layer (New)
+
+### Why an LLM layer?
+
+The existing system already has a strong deterministic core: heuristic suspicion engine, rule-based hypothesis tracking, temporal/spatial analysis, and policy guardrails. These are reliable, fast, auditable, and safe.
+
+The new LLM layer adds a complementary capability: **high-level, evidence-grounded scientific reasoning** that can connect electrical measurements to the device's physical structure, material properties, and fabrication process — something no fixed heuristic rule set can do.
+
+The LLM is an **advisory layer**. It cannot directly control hardware, bypass safety checks, or invent fabrication facts. Every LLM recommendation is validated by the deterministic policy guard before it can influence a measurement decision.
+
+---
+
+### Deterministic core vs. LLM reasoning layer
+
+| Responsibility | Deterministic core | LLM layer |
+|---|---|---|
+| Raw metric extraction | Yes | No |
+| Health classification | Yes | No |
+| Temporal/spatial analysis | Yes | No |
+| Suspicion scoring | Yes | No |
+| Policy guardrails | Yes — final authority | Advisory input only |
+| Safety-critical pauses | Yes | No |
+| Instrument control | Yes | No |
+| Hypothesis synthesis | Rule-based | Evidence-grounded, structure-aware |
+| Structure/process reasoning | No | Yes |
+| Note enrichment | Template-based | Context-aware narrative |
+| Alert explanation | Heuristic | Evidence + structure + uncertainty |
+
+---
+
+### What the LLM does
+
+After each significant decision point (initial health check, each stress batch), the orchestration layer builds a `ScientificReasoningContext` containing:
+
+- Latest measurement summary (leakage, breakdown voltage, compliance hits)
+- Temporal trend summary (trend state, worsening rate)
+- Neighbourhood/spatial summary
+- Control device result (if checked)
+- Active heuristic hypotheses and their support levels
+- Device structure metadata (capacitor type, dielectric material, thickness, electrode materials, edge geometry)
+- Fabrication context (process split, deposition method, anneal notes, known risks, operator comments)
+- Recent experiment events
+- Allowed next actions (as determined by the deterministic policy engine)
+
+This context is serialised to JSON and sent to the LLM. The LLM returns a structured JSON response:
+
+```json
+{
+  "primary_hypotheses": ["CORNER_EFFECT", "FABRICATION_INDUCED_DIELECTRIC_WEAKNESS"],
+  "evidence_for": ["Device at corner position shows rapid degradation; trend state = near_breakdown"],
+  "evidence_against": [],
+  "uncertainty_notes": ["Control device has not been checked yet; cannot exclude setup issue"],
+  "structure_or_process_links": [
+    "Fabrication note: corner devices have ~10-15% thinner dielectric at electrode edges",
+    "10 nm SiO2 dielectric; thinner dielectrics are more susceptible to corner-enhanced field stress"
+  ],
+  "recommended_action": "check_control_device",
+  "recommended_action_reason": "Checking the control device would distinguish a device-level corner effect from a setup issue before concluding",
+  "note_text": "LLM analysis [stress_batch] for CAP_03_00: ..."
+}
+```
+
+The LLM result is used to:
+1. **Update hypotheses** in the hypothesis tracker (with `WEAK_SUPPORT` delta — less authoritative than heuristic rules)
+2. **Enrich notes** with observed evidence, hypothesis labels, structure/process links, and uncertainty statements
+3. **Enrich escalation alerts** with evidence-grounded explanations for the human operator
+4. **Optionally recommend a next action** (validated by the policy guard)
+
+---
+
+### LLM hypothesis types
+
+Four additional hypothesis types are added to the tracker specifically for structure- and process-aware reasoning:
+
+| Hypothesis | Requires | Example trigger |
+|---|---|---|
+| `PROCESS_SPLIT_WEAKNESS` | `fabrication_context.process_split` | Systematic degradation in one process split |
+| `STRUCTURE_DEPENDENT_FIELD_STRESS` | Device structure metadata | Thin dielectric + high voltage |
+| `FABRICATION_INDUCED_DIELECTRIC_WEAKNESS` | `known_fabrication_risks` | Fab note mentions dielectric coverage issue |
+| `EDGE_GEOMETRY_SENSITIVITY` | `edge_shape` + grid position | Square-edge device at corner failing earlier |
+
+These are updated by the LLM, not by fixed heuristics. They require device/process metadata to be meaningful.
+
+---
+
+### How sentinel/control checks influence LLM reasoning
+
+The LLM is explicitly aware of control device results:
+
+- **Control device healthy** → the LLM strengthens device-level or process-level hypotheses, weakens setup/contact hypotheses
+- **Control device degraded** → the LLM strengthens `CONTACT_DEGRADATION` and `SETUP_DRIFT`, recommends escalation
+- **Control device not yet checked** → the LLM notes this uncertainty explicitly and may recommend `check_control_device`
+
+Example LLM note when control passes:
+> "Because the control device (CAP_02_02) remains healthy, the degradation observed on CAP_03_00 is consistent with a device-level or process-linked effect rather than an instrument-wide setup issue. CORNER_EFFECT and FABRICATION_INDUCED_DIELECTRIC_WEAKNESS remain the primary hypotheses."
+
+Example LLM note when control fails:
+> "The control device CAP_02_02 is also degraded — this is inconsistent with a true device-level failure on CAP_01_00 and strongly suggests a setup-level issue (probe contamination, instrument drift). SETUP_DRIFT and CONTACT_DEGRADATION are strongly supported. Human inspection is recommended before further stressing devices."
+
+---
+
+### How fabrication and process metadata is incorporated
+
+Add `chip_fabrication_context` (chip-level, applies to all devices) and `variants` (per-group device structure and process split) to your config YAML:
+
+```yaml
+chip_fabrication_context:
+  fab_run_id: "FAB_2026_Q1_RUN_007"
+  operator_comments: "Corner devices historically show 10-15% lower breakdown voltage."
+  known_fabrication_risks:
+    - "Corner devices have ~10-15% thinner dielectric at electrode edges"
+
+variants:
+  - variant_id: "MIM_CORNER_SPLIT_A"
+    description: "Corner/edge MIM devices, process split A"
+    device_structure:
+      capacitor_type: "MIM"
+      dielectric_material: "SiO2"
+      dielectric_thickness_nm: 10.0
+      top_electrode_material: "TiN"
+      edge_shape: "square"
+    fabrication_context:
+      process_split: "SPLIT_A"
+      deposition_method: "ALD"
+      known_fabrication_risks:
+        - "Corner electrode geometry causes field enhancement at edges"
+    device_ids:
+      - "CAP_03_00"
+      - "CAP_03_01"
+```
+
+The `ContextBuilder` automatically looks up each device's variant metadata and includes it in every reasoning context sent to the LLM. If a device has no variant entry, the chip-level fabrication context is used as a fallback.
+
+---
+
+### Policy guard — how the LLM recommendation is validated
+
+```
+heuristic engine → allowed_actions list
+         ↓
+LLM recommends one action from allowed_actions
+         ↓
+PolicyAdvisor guard checks:
+  1. Action must be in allowed_actions
+  2. Action must not lower the safety level vs. heuristic
+         ↓
+If advisory_only:       log recommendation, keep heuristic action
+If bounded_override:    apply LLM action if guard passes, else keep heuristic
+```
+
+The deterministic policy engine always has final authority. The LLM can never escalate to a less safe action, and it can never propose an action the heuristic engine has not explicitly allowed.
+
+---
+
+### How to run
+
+**With LLM disabled (fully deterministic):**
+```yaml
+llm:
+  enabled: false
+```
+
+**With mock LLM (no API key needed — realistic deterministic responses):**
+```yaml
+llm:
+  enabled: true
+  mode: mock
+  advisory_mode: advisory_only
+```
+
+**With a real LLM (OpenAI or compatible endpoint):**
+```yaml
+llm:
+  enabled: true
+  mode: openai_like
+  model_name: "gpt-4o"
+  api_key: "sk-..."
+  base_url: "https://api.openai.com/v1"
+  advisory_mode: advisory_only   # start here; change to advisory_with_bounded_override once validated
+```
+
+For a local model (Ollama, vLLM, LM Studio):
+```yaml
+llm:
+  enabled: true
+  mode: openai_like
+  model_name: "llama3.1:8b"
+  base_url: "http://localhost:11434/v1"
+  api_key: "ollama"
+```
+
+---
+
+### Output files added by the LLM layer
+
+| File | Contents |
+|---|---|
+| `llm_reasoning.jsonl` | One JSON record per reasoning event: context snapshot, LLM output, heuristic vs LLM action, whether override was applied |
+| `llm_hypothesis_updates.json` | Hypotheses that received LLM-sourced evidence updates |
+| Notes in `notes.md` | Now include `[LLM]` prefixed paragraphs with observed evidence, hypotheses, structure links, and uncertainty statements |
+| Alerts in `alerts.json` | Explanations enriched with active hypotheses, evidence, and operator guidance |
+
+---
+
+### Limitations and hallucination safeguards
+
+The LLM is constrained in several ways to prevent unreliable behaviour:
+
+1. **Structured output only.** Every LLM response is validated against the `LLMReasoningResult` Pydantic schema. If parsing fails, the system logs the error and falls back to deterministic behaviour — the experiment is never blocked.
+
+2. **No unsupported fabrication facts.** The prompt explicitly instructs the LLM: *"Never invent fabrication or process details that are not present in the input."* If no device structure or fabrication metadata is provided, the LLM is told this and restricts itself to electrical evidence only.
+
+3. **Explicit uncertainty.** Prompts require uncertainty statements when evidence is weak. The LLM is instructed to use phrases like *"insufficient evidence to conclude"* and to distinguish observed facts from inferred explanations.
+
+4. **Advisory by default.** The default `advisory_mode` is `advisory_only`: the LLM can never change a measurement decision. All LLM recommendations are logged for review but not executed. Only when the operator explicitly sets `advisory_with_bounded_override` can the LLM influence actions — and even then the safety guard applies.
+
+5. **No raw instrument control.** The LLM layer never calls any instrument API, never reads raw voltage/current arrays, and never bypasses safety checks or compliance limits.
+
+6. **Bounded action set.** The LLM can only recommend actions that the deterministic policy engine has pre-approved for the current situation. It cannot propose arbitrary actions.
 
 ---

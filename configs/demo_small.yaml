@@ -106,3 +106,63 @@ thresholds:
 
 email:
   enabled: false
+
+# LLM scientific reasoning layer — enabled with mock backend for quick tests
+llm:
+  enabled: true
+  mode: mock
+  model_name: "gpt-4o"
+  temperature: 0.2
+  max_tokens: 512
+  enable_llm_notes: true
+  enable_llm_alerts: true
+  enable_llm_policy_advice: true
+  advisory_mode: advisory_only
+
+# Chip-level fabrication context
+chip_fabrication_context:
+  fab_run_id: "FAB_SMALL_TEST_001"
+  operator_comments: "Small test chip, standard MIM process."
+  known_fabrication_risks:
+    - "Corner devices may have non-uniform dielectric at electrode edges"
+
+# Per-variant metadata
+variants:
+  - variant_id: "MIM_CENTRE"
+    description: "Centre devices — standard MIM"
+    device_structure:
+      capacitor_type: "MIM"
+      area_um2: 25.0
+      dielectric_material: "SiO2"
+      dielectric_thickness_nm: 10.0
+      top_electrode_material: "TiN"
+      bottom_electrode_material: "TiN"
+    fabrication_context:
+      process_split: "SPLIT_A"
+      deposition_method: "ALD"
+    device_ids:
+      - "CAP_00_00"
+      - "CAP_00_01"
+      - "CAP_00_02"
+      - "CAP_01_00"
+      - "CAP_01_01"
+      - "CAP_01_02"
+
+  - variant_id: "MIM_CORNER"
+    description: "Corner/edge devices — higher field-stress risk"
+    device_structure:
+      capacitor_type: "MIM"
+      area_um2: 25.0
+      dielectric_material: "SiO2"
+      dielectric_thickness_nm: 10.0
+      top_electrode_material: "TiN"
+      bottom_electrode_material: "TiN"
+      edge_shape: "square"
+    fabrication_context:
+      process_split: "SPLIT_A"
+      known_fabrication_risks:
+        - "Corner electrode geometry causes enhanced local field stress"
+    device_ids:
+      - "CAP_02_00"
+      - "CAP_02_01"
+      - "CAP_02_02"

@@ -48,7 +48,7 @@ class NotesWriter:
     def note_shorted_device(device_id: str, resistance_ohm: float) -> str:
         return (
             f"Device {device_id} detected as shorted at initial health check "
-            f"(R_est = {resistance_ohm:.2e} Ω). Durability testing skipped. "
+            f"(R_est = {resistance_ohm:.2e} Ohm). Durability testing skipped. "
             f"PRE_EXISTING_SHORT hypothesis supported."
         )
 
